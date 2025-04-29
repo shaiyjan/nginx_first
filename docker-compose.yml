@@ -1,0 +1,51 @@
+services:
+  mysql:
+    container_name: sqlco
+    restart: always
+    build: ./sql/
+#    command: --init-file /data/application/init.sql
+#    volumes:
+#      - ./sql/init.sql:/data/application/init.sql
+    ports:
+      - "3306:3306"
+    networks:
+        net:
+          ipv4_address: 172.16.103.13
+
+    environment:
+      MYSQL_DATABASE: "db"
+      MYSQL_ROOT_HOST: "host"
+      MYSQL_ROOT_PASSWORD: "P@ssw0rd"
+      SA_PASSWORD: "P@ssw0rd"
+      ACCEPT_EULA: "Y"
+      MYSQL_USER: "user"
+      MYSQL_PASSWORD: "password"
+
+  nginx:
+    container_name: nginxco
+    ports:
+      - "8080:80"
+    build: 
+      dockerfile: nginx
+    networks:
+      net:
+        ipv4_address: 172.16.103.40
+
+
+  python:
+    container_name: backco
+    build:
+       ./python/
+    ports:
+      - "80:80"
+    networks:
+        net:
+          ipv4_address: 172.16.103.100
+      
+networks:
+  net:
+    driver: bridge
+    ipam:
+      config:
+      - subnet: 172.16.103.0/24
+        gateway: 172.16.103.1
