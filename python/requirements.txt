@@ -1,0 +1,2 @@
+fastapi[standard]==0.115.4
+mysql-connector-python==9.1.0
