@@ -1,14 +1,11 @@
 <html>
-  <header>
-    Access-Control-Allow-Origin: localhost
-  </header>
 <body>
 
   <script>
     // Function to fetch names from the backend server
     async function fetchNames() {
         try {
-            const response = await fetch('https://your-backend-url.com/api/names'); // Replace with your backend URL
+            const response = await fetch('http://localhost:80/tournaments'); // Replace with your backend URL
             const data = await response.json(); // Assuming the server returns a JSON array
             if (Array.isArray(data)) {
                 renderNames(data);
@@ -64,31 +61,41 @@ function submit1(){
 <div class="screen" id="screen3"></div>
 <div class="screen" id="screen4"></div>
 <script>
-const userAction = async () => {
-// Make a GET request
-const obj = {name: "John", age: 30, city: "New York"};
-document.getElementById("screen2").innerHTML=JSON.stringify(obj)
-console.log("123")
-
-fetch("http://localhost:80")
-  .then(
-    response => {
-      document.getElementById("screen3").innerHTML = "load";
-      document.getElementById("screen4").innerHTML = response;
-    if (!response.ok) {
-      document.getElementById("screen4").innerHTML = "Error";
-      throw new Error('Network response was not ok');
-    }
-    else {document.getElementById("screen3").innerHTML ="test"};
-    return response.json();
-  })
-  .then(data => {
-    document.getElementById("screen2").innerHTML = JSON.stringify(data);
-  })
-  .catch(error => {
-    console.error('Error:', error);
-  });
+const userAction = async () => 
+    {// Make a GET request
+    const obj = {name: "John", age: 30, city: "New York"};
+    document.getElementById("screen2").innerHTML=JSON.stringify(obj);  
   }
 </script>
+
+<button onclick="fetchTournaments()"> Fetch Tournaments</button>
+<div class="screen" id="screen5"></div>
+<div class="screen" id="screen6"></div>
+<div class="screen" id="screen7"></div>
+
+<script>
+  const fetchTournaments=async() => {
+    fetch("http:/localhost:80/tournaments").then(
+        response => {
+          document.getElementById("screen5").innerHTML = "load";
+          document.getElementById("screen6").innerHTML = response;
+        if (!response.ok) {
+          document.getElementById("screen7").innerHTML = "Error";
+          throw new Error('Network response was not ok');
+        }
+        else {document.getElementById("screen7").innerHTML ="failed"};
+        return response.json();
+      })
+      .then(data => {
+        document.getElementById("screen6").innerHTML = JSON.stringify(response);
+      })
+      .catch(error => {
+        console.error('Error:', error);
+      });
+  }
+
+</script>
+
+
 
 </body>

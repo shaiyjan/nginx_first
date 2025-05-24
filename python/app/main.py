@@ -1,5 +1,5 @@
 import mysql.connector as mysql
-# import db
+import csv
 
 
 from fastapi import FastAPI
@@ -64,21 +64,15 @@ def insert():
                 VALUES ("Ada","Abel"),("Cane","Chenning");
                 """)
         mydb.commit()
-        cursor.execute("""
-                create table if not exists test(
-                    id int not null auto_increment,
-                    text varchar(100),
-                    primary key(id)
-                );
-                """
-        )
-        mydb.commit()
         mydb.close()
     except Exception as e:
         print(e)
-    
 
 
+
+
+
+insert()
 
 app = FastAPI()
 
@@ -87,10 +81,25 @@ app.add_middleware(
     allow_origins=['*']
 )
 
-
 @app.get("/")
 def read_root():
     return {"Hello": "World", "bla": test()}
+
+@app.get("/tournaments")
+def read_tournaments() -> dict:
+    with mysql.connect(**db_dict) as db:
+        cursor=db.cursor()
+        cursor.execute(
+            """
+            select * from tournaments;
+            """
+        )
+        tournaments=cursor.fetchall()
+        ret_dict = dict()
+        for tournament in tournaments:
+            ret_dict[tournament[0]]=tournament[1]
+        return ret_dict
+
 
 dummy_dict={1:"A",2:"B",3:"C"}
 
@@ -98,12 +107,20 @@ dummy_dict={1:"A",2:"B",3:"C"}
 def read_item(item_id: int):
     return {"item_id": item_id, "q": dummy_dict[item_id]}
 
-@app.get("/tournaments")
-def read_names() -> list:
-    names_list=database.tournament_names()
-    return {"data" : [{"id": count, "name": names_list[count]} for count in range(names_list.__len__())]}
+#@app.get("/tournaments")
+#def read_names() -> list:
+#    names_list=database.tournament_names()
+#    return {"data" : [{"id": count, "name": names_list[count]} for count in range(names_list.__len__())]}
 
-
+@app.get("/insert")
+def db_insertion() -> dict:
+    try:
+        insert()
+    except Exception as e:
+        ret_dict = {"Success" : "Failed"}
+    else: 
+        ret_dict = {"Success" : "Succesfull"}
+    return ret_dict
 
 # if __name__=="__main__":
 #     insert()

@@ -1,11 +1,12 @@
 services:
   mysql:
     container_name: sqlco
+    image: mysql
     restart: always
-    build: ./sql/
-#    command: --init-file /data/application/init.sql
-#    volumes:
-#      - ./sql/init.sql:/data/application/init.sql
+#    build: ./sql/
+    #command: --init-file /data/application/init.sql
+    #volumes:
+    #  - ./sql/init.sql:/data/application/init.sql
     ports:
       - "3306:3306"
     networks:
@@ -26,7 +27,7 @@ services:
     ports:
       - "8080:80"
     build: 
-      dockerfile: nginx
+      dockerfile: dockerfile.nginx
     networks:
       net:
         ipv4_address: 172.16.103.40

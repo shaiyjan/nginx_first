@@ -53,16 +53,63 @@
             <h1>MTV-Gießen Wettbewerbs-Name</h1>
         </header>
 
-        
+
+
+
+
         <section>
             <nav>
-                <ul>
+                <ul id="tournamentLinks">
+                    <script>
+                        async function fetchTournaments(url) {
+                            const response = await fetch(url);
+                            if (!response.ok) {
+                                console.log("failed");
+                            }
+                            const data = await response.json();
+                            console.log("worked");
+                            console.log(data);
+                            const list = document.getElementById("tournamentLinks");
+                            for (const [key,value] of Object.entries(data)) {
+                                const li = document.createElement("li");
+                                const ref = document.createElement("a");
+                                ref.href = "tour/" + key;
+                                ref.textContent = value;
+                                li.appendChild(ref) ;
+                                list.appendChild(li);
+                            }
+                        }
+
+                        fetchTournaments('http://localhost:80/tournaments');
+
+                    </script>
+                    <script>
+                        async function testlist(){
+                            let data=["Link111","Link112"];
+                            let list = document.getElementById("tournamentLinks");
+                            data.forEach((item) => {
+                                let li = document.createElement("li");
+                                li.innerText = item;
+                                list.appendChild(li);} )    
+                        }
+                        testlist();
+                    </script>
+                    <script>
+                        let data = ["Link11","Link12","Link13"]
+                        let list = document.getElementById("tournamentLinks");
+                        data.forEach((item) => {
+                            let li = document.createElement("li");
+                            li.innerText = item;
+                            list.appendChild(li);
+                        } )
+                    </script>
                     <li><a href="#">Link 1</a></li>
                     <li><a href="#">Link 2</a></li>
                     <li><a href="#">Link 3</a></li>
                 </ul>
             </nav>
             <article>
+                
                 Here one can see all the tournaments and click them!
             </article>
         </section>

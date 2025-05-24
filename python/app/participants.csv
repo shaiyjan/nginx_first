@@ -1,0 +1,19 @@
+id;lastname;firstname;dateofbirth;gender;nation;region;club;paid;paymentmethod;payment-id;partner;date;user;user_email;ranking;points;state;order;natid;competition;recipe;attandence;attest
+0;LastName0;FirstName0;25.04.1992;M;GER;;Club0;no;;;;06.05.2024 16:18;;;-10000;;active;1;;Florett Herren Senior Einzel ;no;no;no
+1;LastName1;FirstName1;26.05.2002;M;GER;;Club0;no;;;;06.05.2024 16:18;;;-10000;;active;2;;Florett Herren Senior Einzel ;no;no;no
+2;LastName2;FirstName2;10.10.2006;M;GER;;Club0;no;;;;06.05.2024 16:18;;;-10000;;active;3;;Florett Herren Senior Einzel ;no;no;no
+3;LastName3;FirstName3;27.11.1998;M;GER;;Club0;no;;;;06.05.2024 16:18;;;-10000;;active;4;;Florett Herren Senior Einzel ;no;no;no
+4;LastName4;FirstName4;02.11.1995;M;GER;;Club0;no;;;;06.05.2024 16:18;;;-10000;;active;5;;Florett Herren Senior Einzel ;no;no;no
+5;LastName5;FirstName5;02.07.1993;M;GER;;Club0;no;;;;06.05.2024 16:18;;;-10000;;active;6;;Florett Herren Senior Einzel ;no;no;no
+6;LastName6;FirstName6;09.05.2003;F;GER;;Club1;no;;;;26.04.2024 20:19;;;-10000;;active;1;;Florett Damen Senior Einzel ;no;no;no
+7;LastName7;FirstName7;15.03.1993;F;GER;;Club1;no;;;;26.04.2024 20:19;;;-10000;;active;2;;Florett Damen Senior Einzel ;no;no;no
+8;LastName8;FirstName8;08.06.2008;F;GER;;Club0;no;;;;06.05.2024 16:18;;;-10000;;active;3;;Florett Damen Senior Einzel ;no;no;no
+9;LastName9;FirstName9;30.07.1997;F;GER;;Club0;no;;;;06.05.2024 16:19;;;-10000;;active;4;;Florett Damen Senior Einzel ;no;no;no
+7;LastName7;FirstName7;15.03.1993;F;GER;;Club1;no;;;;26.04.2024 20:19;;;-10000;;active;1;;Degen Damen Senior Einzel ;no;no;no
+10;LastName10;FirstName10;29.11.1989;F;RUS;;Club2;no;;;;04.05.2024 12:07;;;-10000;;active;2;;Degen Damen Senior Einzel ;no;no;no
+11;LastName11;FirstName11;15.10.1990;M;GER;;Club2;no;;;;04.05.2024 11:04;;;-10000;;active;1;;Degen Herren Senior Einzel ;no;no;no
+5;LastName5;FirstName5;02.07.1993;M;GER;;Club0;no;;;;06.05.2024 16:19;;;-10000;;active;2;;Degen Herren Senior Einzel ;no;no;no
+0;LastName0;FirstName0;25.04.1992;M;GER;;Club0;no;;;;06.05.2024 16:18;;;-10000;;active;1;;Säbel Herren Senior Einzel ;no;no;no
+2;LastName2;FirstName2;10.10.2006;M;GER;;Club0;no;;;;06.05.2024 16:18;;;-10000;;active;2;;Säbel Herren Senior Einzel ;no;no;no
+3;LastName3;FirstName3;27.11.1998;M;GER;;Club0;no;;;;06.05.2024 16:18;;;-10000;;active;3;;Säbel Herren Senior Einzel ;no;no;no
+4;LastName4;FirstName4;02.11.1995;M;GER;;Club0;no;;;;06.05.2024 16:18;;;-10000;;active;4;;Säbel Herren Senior Einzel ;no;no;no

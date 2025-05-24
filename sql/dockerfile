@@ -1,4 +1,4 @@
-FROM mysql:latest
-COPY ./database.sql /docker-entrypoint-initdb.d/
+#FROM mysql:latest
+#COPY ./database.sql /docker-entrypoint-initdb.d/
 #ADD ./sql/init.sh  /tmp/init_db.sh
 #RUN /tmp/init_db.sh

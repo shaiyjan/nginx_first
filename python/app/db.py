@@ -47,6 +47,6 @@ class dbcon:
         except Exception as e:
             print(e)
 
-# if __name__=="__main__":
-#     db=dbcon()
-#     print(db.tournament_names())
+ if __name__=="__main__":
+     db=dbcon()
+     print(db.tournament_names())
