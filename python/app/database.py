@@ -111,10 +111,9 @@ def insert():
             """
         )
         tournaments = [{"name" :  fetch[0]} for fetch in cursor.fetchall()]
-        print(tournaments)
         cursor.execute(
             """
-            create table if not exists tournaments(
+            create table if not exists signuplists(
             TournamentId int NOT NULL AUTO_INCREMENT,
             name varchar(200),
             PRIMARY KEY (TournamentID)
@@ -123,7 +122,7 @@ def insert():
         )
         cursor.executemany(
         """
-        INSERT INTO tournaments (name) VALUES
+        INSERT INTO signuplists (name) VALUES
         (%(name)s)
         """,
         tournaments
@@ -162,4 +161,23 @@ def read_tournaments() -> list:
             ret_dict[tournament[0]]=tournament[1]
         return ret_dict
 
-print( read_tournaments())
+def read_participants(list_id : int) -> dict:
+    with mysql.connect(**db_dict) as db:
+        cursor = db.cursor()
+        cursor.execute(
+            """
+            select 
+                r.lastname,
+                r.firstname,
+                r.club,
+                s.tournamentid
+            from registrations as r
+            left join signuplists as s on s.name = r.competition
+            where s.tournamentid =
+            """  + str(list_id) + ";"
+                       )
+        ret = cursor.fetchall()
+        for x in ret:
+            print(x)
+
+read_participants(1)

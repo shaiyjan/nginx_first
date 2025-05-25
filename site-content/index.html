@@ -59,17 +59,54 @@
 
         <section>
             <nav>
+                <p>Anmeldungen: </p>
                 <ul id="tournamentLinks">
                     <script>
-                        async function fetchTournaments(url) {
+                        async function fetchSignups(url) {
                             const response = await fetch(url);
                             if (!response.ok) {
-                                console.log("failed");
+                                console.log("failed to fetch signups");
                             }
                             const data = await response.json();
-                            console.log("worked");
-                            console.log(data);
                             const list = document.getElementById("tournamentLinks");
+                            for (const [key,value] of Object.entries(data)) {
+                                const li = document.createElement("li");
+                                const ref = document.createElement("a");
+                                ref.href = "signup/" + key;
+                                ref.textContent = value;
+                                li.appendChild(ref) ;
+                                list.appendChild(li);
+                            }
+                        }
+
+                        fetchSignups('http://localhost:80/signuplists');
+
+                    </script>
+                </ul>
+            </nav>
+
+
+            <article id="mainwindow">
+                <ul id="tournamentlist">
+
+                </ul>
+                <script>
+                    async function fetchTournaments(url) {
+                        const response = await fetch(url);
+                        if (!response.ok) {
+                            console.log("failed to fetch tournaments")
+                        }
+                        const data = await response.json();
+                        console.log(data)
+                        console.log(data.length)
+                        const list = document.getElementById("tournamentlist")
+                        if (data.length==0) {
+                            const window = document.getElementById("mainwindow");
+                            const pele = document.createElement("p");
+                            pele.textContent("There exist no tournaments so far.");
+                            window.appendChild(pele);
+                        }
+                        else {
                             for (const [key,value] of Object.entries(data)) {
                                 const li = document.createElement("li");
                                 const ref = document.createElement("a");
@@ -77,40 +114,14 @@
                                 ref.textContent = value;
                                 li.appendChild(ref) ;
                                 list.appendChild(li);
-                            }
+                                }
                         }
-
-                        fetchTournaments('http://localhost:80/tournaments');
-
-                    </script>
-                    <script>
-                        async function testlist(){
-                            let data=["Link111","Link112"];
-                            let list = document.getElementById("tournamentLinks");
-                            data.forEach((item) => {
-                                let li = document.createElement("li");
-                                li.innerText = item;
-                                list.appendChild(li);} )    
-                        }
-                        testlist();
-                    </script>
-                    <script>
-                        let data = ["Link11","Link12","Link13"]
-                        let list = document.getElementById("tournamentLinks");
-                        data.forEach((item) => {
-                            let li = document.createElement("li");
-                            li.innerText = item;
-                            list.appendChild(li);
-                        } )
-                    </script>
-                    <li><a href="#">Link 1</a></li>
-                    <li><a href="#">Link 2</a></li>
-                    <li><a href="#">Link 3</a></li>
-                </ul>
-            </nav>
-            <article>
-                
-                Here one can see all the tournaments and click them!
+                        
+                        
+                    }
+                    fetchTournaments('http://localhost:80/signuplists')
+                </script>
+                <a href="newtournament.html">Create new tournament!</a>
             </article>
         </section>
         <footer>
