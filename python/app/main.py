@@ -103,6 +103,7 @@ def read_participants(list_id : int) -> dict:
             """  + str(list_id) + ";"
                        )
         ret = cursor.fetchall()
+        return dict(enumerate(ret))
 
 
 

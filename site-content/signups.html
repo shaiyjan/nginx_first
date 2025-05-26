@@ -1,0 +1,55 @@
+<html>
+<body>
+    <script>
+        const pathParts= window.location.pathname.split('/')
+        window.tourID = pathParts[2]
+    </script>
+
+<p id=tourName> </p>
+<table id="part_info">
+<tr>
+    <th>Firstname</th>
+    <th>Lastname</th>
+    <th>Club</th>
+</tr>
+
+</table>
+    <script>
+        element = document.getElementById("tourName")
+        element. textContent = window.tourID
+
+        async function participants(url) {
+            const response = await fetch(url);
+            if (!response.ok) {
+                console.log("failed to fetch participant data")
+            }
+            console.log("Fetch succesfull")
+            const data = await response.json();
+            console.log(data);
+            const table = document.getElementById("part_info");
+            for (const [key,value] of Object.entries(data)) {
+                console.log(value);
+                const tr = document.createElement("tr");
+                const tsf =document.createElement("td"); 
+                const tsl =document.createElement("td");
+                const tsc =document.createElement("td");
+                tsf.textContent = value[0];
+                tsl.textContent = value[1];
+                tsc.textContent = value[2];
+                tr.appendChild(tsf)
+                tr.appendChild(tsl)
+                tr.appendChild(tsc)
+                table.appendChild(tr)
+            }
+        }
+
+        participants("http://localhost:80/signuplist/" + window.tourID)
+    </script>
+
+
+
+</body>
+
+
+
+</html>
