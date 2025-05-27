@@ -26,8 +26,14 @@ services:
     container_name: nginxco
     ports:
       - "8080:80"
-    build: 
-      dockerfile: dockerfile.nginx
+    # include for testing!
+    image: nginx:latest
+    volumes:
+      - ./site-content:/usr/share/nginx/html:ro
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    # exclude for testing!
+    #build: 
+    #  dockerfile: dockerfile.nginx
     networks:
       net:
         ipv4_address: 172.16.103.40

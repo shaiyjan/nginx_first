@@ -1,0 +1,37 @@
+header {
+    background-color:crimson;
+    padding:30px;
+    text-align: center;
+    font-size: large;
+    color:black
+}
+
+nav {
+    background-color: black;
+    float: left;
+    background: #ccc;
+    padding: 20px;
+}
+
+article {
+    background-color: white;
+    float: left;
+    padding: 20px;
+    width: auto;
+    height: auto;
+    overflow-x: auto;
+}
+
+footer {
+    background-color: crimson;
+    padding: 10px;
+    text-align: center;
+    color: black;
+}
+
+section::after {
+    content: "";
+    min-height: max-content;
+    display: table;
+    clear: both;
+}

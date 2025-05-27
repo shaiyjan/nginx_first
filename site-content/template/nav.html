@@ -1,0 +1,26 @@
+<nav>
+    <p>Anmeldungen: </p>
+    <ul id="tournamentLinks">
+        <script>
+            async function fetchSignups(url) {
+                const response = await fetch(url);
+                if (!response.ok) {
+                    console.log("failed to fetch signups");
+                }
+                const data = await response.json();
+                const list = document.getElementById("tournamentLinks");
+                for (const [key,value] of Object.entries(data)) {
+                    const li = document.createElement("li");
+                    const ref = document.createElement("a");
+                    ref.href = "/signups/" + key;
+                    ref.textContent = value;
+                    li.appendChild(ref) ;
+                    list.appendChild(li);
+                }
+            }
+
+            fetchSignups('http://localhost:80/signuplists');
+
+        </script>
+    </ul>
+</nav>
