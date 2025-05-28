@@ -1,32 +1,104 @@
+/* Full height layout setup */
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  font-family: sans-serif;
+}
+
+/* Fixed header and footer */
 header {
-    background-color:crimson;
-    padding:30px;
-    text-align: center;
-    font-size: large;
-    color:black
+  background-color: crimson;
+  color: black;
+  text-align: center;
+  padding: 10px;
+  height: 120px;
+  box-sizing: border-box;
 }
 
-nav {
-    background-color: black;
-    float: left;
-    background: #ccc;
-    padding: 20px;
-}
-
-article {
-    background-color: white;
-    float: left;
-    padding: 20px;
-    width: auto;
-    height: auto;
-    overflow-x: auto;
+section{
+  background-color: white;
+  flex: 1;
+  padding: 0px;
+  height: auto;
+  box-sizing: border-box;
+  overflow-y: auto;
 }
 
 footer {
-    background-color: crimson;
+  background-color: crimson;
+  color: white;
+  text-align: center;
+  padding: 10px;
+  height: 40px;
+  box-sizing: border-box;
+}
+
+/* Main takes the remaining space */
+main {
+  flex: 1;
+  display: flex;
+  overflow: hidden;
+  min-height: 0;
+}
+
+/* Scrollable nav */
+nav {
+  float: left;
+  background-color: #ccc;
+  width: 25%;
+  max-width: 300px;
+  padding: 20px;
+  height: 100vh;
+  box-sizing: border-box;
+  overflow-y: auto;
+}
+
+/* Scrollable article */
+article {
+  background-color: white;
+  flex: 1;
+  padding: 20px;
+  box-sizing: border-box;
+  overflow-y: auto;
+}
+
+/*
+
+header {
+    background:crimson;
+    padding:px;
+    text-align: center;
+    font-size: large;
+    color:black;
+    height: auto;
+}
+
+nav {
+    float: left;
+    background: #ccc;
+    flex: 1;
+    padding: 20px;
+    height:auto;
+}
+
+article {
+    background: white;
+    float: left;
+    padding: 20px;
+    width: auto;
+    flex: 1;
+    overflow-y: auto;
+}
+
+footer {
+    background: crimson;
     padding: 10px;
     text-align: center;
     color: black;
+    height: 15px;
 }
 
 section::after {
@@ -35,3 +107,5 @@ section::after {
     display: table;
     clear: both;
 }
+
+*/

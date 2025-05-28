@@ -145,8 +145,6 @@ with open("participants.csv") as csvfile:
         )
 
 
-insert()
-
 def read_tournaments() -> list:
     with mysql.connect(**db_dict) as db:
         cursor=db.cursor()
@@ -180,4 +178,55 @@ def read_participants(list_id : int) -> dict:
         for x in ret:
             print(x)
 
-read_participants(1)
+insert()
+
+def copy_tournaments() -> dict:
+    with mysql.connect(**db_dict) as db:
+        cursor =db.cursor()
+        cursor.execute(
+            """
+            select * from signuplists;
+            """
+        )
+        tournaments =cursor.fetchall()
+        ret_dict = dict()
+        for tournament in tournaments:
+            ret_dict[tournament[0]]=tournament[1]
+        
+        print(tournaments)
+        cursor.execute(
+            """
+            create table if not exists tournaments(
+            TournamentId int NOT NULL AUTO_INCREMENT,
+            name varchar(200),
+            PRIMARY KEY (TournamentID)
+            )
+            """
+        )
+
+        cursor.executemany(
+        """
+        INSERT INTO tournaments (name) VALUES
+        (%(name)s)
+        """,
+            [{"name": "Tournament " + tup[1]} for tup in tournaments ]
+        )
+        db.commit()
+
+copy_tournaments()
+
+def read_tournaments() -> dict:
+    with mysql.connect(**db_dict) as db:
+        cursor =db.cursor()
+        cursor.execute(
+            """
+            select * from tournaments;
+            """
+        )
+        tournaments =cursor.fetchall()
+        ret_dict = dict()
+        for tournament in tournaments:
+            ret_dict[tournament[0]]=tournament[1]
+        return ret_dict
+    
+print(read_tournaments())

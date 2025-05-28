@@ -27,8 +27,10 @@ tr:nth-child(even) {
 }
 </style>
 
+
+
 <article id="mainwindow">
-    <p id=tourName></p>
+    <h3 id=tourName>Failed to Fetch</h3>
     <table id="part_info">
         <tr>
             <th>Firstname</th>
@@ -37,6 +39,20 @@ tr:nth-child(even) {
         </tr>
     </table>
 </article>
+
+<script>
+    async function tournament_name(url){
+        const response = await fetch(url);
+        if (!response.ok) {
+            console.log("failed to fetch participant data")
+        }
+        const data = await response.json();
+        const header = document.getElementById("tourName");
+        header.textContent = data[window.tourID];
+    }
+    tournament_name("http://localhost:80/tournaments");
+
+</script>
 
 
 <script>

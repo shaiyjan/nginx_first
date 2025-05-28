@@ -82,10 +82,7 @@ def read_tournaments() -> dict:
             """
         )
         tournaments =cursor.fetchall()
-        ret_dict = dict()
-        for tournament in tournaments:
-            ret_dict[tournament[0]]=tournament[1]
-        return ret_dict
+        return dict(tournaments)
 
 @app.get("/signuplist/{list_id}")
 def read_participants(list_id : int) -> dict:
