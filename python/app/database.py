@@ -116,6 +116,7 @@ def insert():
             create table if not exists signuplists(
             TournamentId int NOT NULL AUTO_INCREMENT,
             name varchar(200),
+            in_tournament bool default FALSE,
             PRIMARY KEY (TournamentID)
             )
             """
@@ -135,6 +136,7 @@ def insert():
 
 
 participants=[]
+
 with open("participants.csv") as csvfile:
     reader = csv.reader(csvfile,delimiter=";")
     header=next(reader)
@@ -143,40 +145,6 @@ with open("participants.csv") as csvfile:
         participants.append(
             dict(zip(header,row))
         )
-
-
-def read_tournaments() -> list:
-    with mysql.connect(**db_dict) as db:
-        cursor=db.cursor()
-        cursor.execute(
-            """
-            select * from tournaments;
-            """
-        )
-        tournaments=cursor.fetchall()
-        ret_dict = dict()
-        for tournament in tournaments:
-            ret_dict[tournament[0]]=tournament[1]
-        return ret_dict
-
-def read_participants(list_id : int) -> dict:
-    with mysql.connect(**db_dict) as db:
-        cursor = db.cursor()
-        cursor.execute(
-            """
-            select 
-                r.lastname,
-                r.firstname,
-                r.club,
-                s.tournamentid
-            from registrations as r
-            left join signuplists as s on s.name = r.competition
-            where s.tournamentid =
-            """  + str(list_id) + ";"
-                       )
-        ret = cursor.fetchall()
-        for x in ret:
-            print(x)
 
 insert()
 
@@ -214,19 +182,3 @@ def copy_tournaments() -> dict:
         db.commit()
 
 copy_tournaments()
-
-def read_tournaments() -> dict:
-    with mysql.connect(**db_dict) as db:
-        cursor =db.cursor()
-        cursor.execute(
-            """
-            select * from tournaments;
-            """
-        )
-        tournaments =cursor.fetchall()
-        ret_dict = dict()
-        for tournament in tournaments:
-            ret_dict[tournament[0]]=tournament[1]
-        return ret_dict
-    
-print(read_tournaments())

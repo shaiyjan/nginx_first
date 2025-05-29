@@ -50,7 +50,7 @@ tr:nth-child(even) {
         const header = document.getElementById("tourName");
         header.textContent = data[window.tourID];
     }
-    tournament_name("http://localhost:80/tournaments");
+    tournament_name(window.domain + '/tournaments');
 
 </script>
 
@@ -78,7 +78,7 @@ tr:nth-child(even) {
             table.appendChild(tr)
         }
     }
-    participants("http://localhost:80/signuplist/" + window.tourID)
+    participants(window.domain + '/signuplist/' + window.tourID)
 </script>
 
 <!--# include virtual="template/footer.html" -->

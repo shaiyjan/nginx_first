@@ -102,14 +102,24 @@ def read_participants(list_id : int) -> dict:
         ret = cursor.fetchall()
         return dict(enumerate(ret))
 
-
-
-@app.get("/insert")
-def db_insertion() -> dict:
-    try:
-        insert()
-    except Exception as e:
-        ret_dict = {"Success" : "Failed"}
-    else: 
-        ret_dict = {"Success" : "Succesfull"}
-    return ret_dict
+@app.get("/signup_extra")
+def read_signuplist_extend() -> dict:
+    with mysql.connect(**db_dict) as db:
+        cursor = db.cursor()
+        cursor.execute(
+            """
+            select 
+                f.*,
+                s.in_tournament
+                from signuplists as s
+                left join (
+                select 
+                    r.competition,
+                    count(distinct r.FencerId)
+                from registrations as r 
+                group by r.competition
+                ) as f  on s.name = f.competition
+            """
+        )
+        return (dict(enumerate(cursor.fetchall())))
+    
