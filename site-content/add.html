@@ -1,0 +1,101 @@
+<html>
+<body>
+
+  <script>
+    // Function to fetch names from the backend server
+    async function fetchNames() {
+        try {
+            const response = await fetch('http://localhost:80/tournaments'); // Replace with your backend URL
+            const data = await response.json(); // Assuming the server returns a JSON array
+            if (Array.isArray(data)) {
+                renderNames(data);
+            } else {
+                console.error('Data is not in the expected format');
+            }
+        } catch (error) {
+            console.error('Error fetching data:', error);
+        }
+    }
+  </script>
+
+<div class="container-fluid">
+    <header>
+        <h1>Business Registration Address Setup</h1>
+    </header>
+
+    <label>number 1</label>
+    <input type="text" name="number1" id="number1" placeholder="enter single digit number"> <br>
+    +<br>
+    <label>number 2</label>
+    <input type="text" name="number2" id="number2" placeholder="enter single digit number"><br>
+    <button type="button" class="btn btn-info" onclick="submit1()">submit</button><br><br>
+    <div class="screen" id="screen1"></div>
+
+
+</div> <!-- End Container-->
+
+<div>
+  <input type="file" id="part_csv" name="part_csv"/>
+  <input type="submit" onclick="submit_csv()"/>
+</div>
+
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>
+<script>
+$( document ).ready(function() {
+
+});
+function submit_csv(){
+  var file=document.getElementById("part_csv").document
+}
+function submit1(){
+    var a =  document.getElementById("number1").value;
+    var b =  document.getElementById("number2").value;
+    var c = parseInt(a) + parseInt(b); 
+    document.getElementById("screen1").innerHTML=c;
+    document.getElementById("screen2").innerHTML=2;
+  }
+</script>
+<button onclick="userAction()">Click me!</button><br>
+<div class="screen" id="screen2"></div>
+<div class="screen" id="screen3"></div>
+<div class="screen" id="screen4"></div>
+<script>
+const userAction = async () => 
+    {// Make a GET request
+    const obj = {name: "John", age: 30, city: "New York"};
+    document.getElementById("screen2").innerHTML=JSON.stringify(obj);  
+  }
+</script>
+
+<button onclick="fetchTournaments()"> Fetch Tournaments</button>
+<div class="screen" id="screen5"></div>
+<div class="screen" id="screen6"></div>
+<div class="screen" id="screen7"></div>
+
+<script>
+  const fetchTournaments=async() => {
+    fetch("http:/localhost:80/tournaments").then(
+        response => {
+          document.getElementById("screen5").innerHTML = "load";
+          document.getElementById("screen6").innerHTML = response;
+        if (!response.ok) {
+          document.getElementById("screen7").innerHTML = "Error";
+          throw new Error('Network response was not ok');
+        }
+        else {document.getElementById("screen7").innerHTML ="failed"};
+        return response.json();
+      })
+      .then(data => {
+        document.getElementById("screen6").innerHTML = JSON.stringify(response);
+      })
+      .catch(error => {
+        console.error('Error:', error);
+      });
+  }
+
+</script>
+
+
+
+</body>

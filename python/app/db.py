@@ -26,6 +26,7 @@ with mysql.connect(**db_dict) as db:
             from registrations as r 
             group by r.competition
             ) as f  on s.name = f.competition
+            where s.TournamentId in (1,2,3)
         """
     )
     print(dict(enumerate(cursor.fetchall())))
