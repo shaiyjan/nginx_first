@@ -4,25 +4,6 @@
 <!--# include virtual="template/header.html" -->
 <!--# include virtual="template/nav.html" -->
 
-<!--
-    <style>
-    table {
-    font-family: arial, sans-serif;
-    border-collapse: collapse;
-    width: 100%;
-    }
-
-    td, th {
-    border: 1px solid #dddddd;
-    text-align: left;
-    padding: 8px;
-    }
-
-    tr:nth-child(even) {
-    background-color: #dddddd;
-    }
-    </style>
--->
 
 
 <article id="mainwindow">
@@ -48,30 +29,12 @@
                     <option value="1" selected="selected"> 1 </option>
                     <option value="2"> 2 </option>
                 </select>
+                <br>
+                <label for="p_count">Number of participants:</label>
+                <input type="text" name="participant_count" id="p_count" disabled>
+
         </form>
     </div>
-
-    <!--
-
-    <div style="margin-bottom:.5cm;">
-    <label for="tournament_name" > Name of the Tournament:</label>
-    <input id="tournament_name" input="text"></input>
-    </div>   
-
-    <div style="margin-bottom:.5cm;">
-    <label for="mode-select">Choose a tournament mode:</label>
-
-    <select name="mode" id="mode-select">
-        <option value="">--Please choose an option--</option>
-        <option value="ko">K.O.</option>
-        <option value="doubleko">Double K.O.</option>
-        <option value="rr">Round-Robin</option>
-    </select>
-    </datalist>
-
-    </div>
-
-    -->
 
     <div>
         <table id = "tour_list">
@@ -85,15 +48,35 @@
 
 
     <script>
+
+        function updateTotal() {
+            let total=0;
+
+            const container=document.getElementById("tour_list");
+            const checkboxes = container.querySelectorAll(".vBox");
+
+
+
+            const total_text = document.getElementById("p_count")
+            console.log(total_text.value)
+
+            checkboxes.forEach(checkbox => {
+                if (checkbox.checked){
+                    total += parseInt(checkbox.getAttribute('data-value'));
+                }
+
+            })
+            console.log(total)
+            total_text.value = total;
+        }
+
         async function signuplists(url) {
             const response = await fetch(url);
             if (!response.ok) {
                 console.log("failed to fetch from " & url);
             }
             const data = await response.json();
-            console.log(data)
             for (const [key,value] of Object.entries(data)) {
-                    console.log(value)
                     const li = document.createElement("tr");
                     const  tdn = document.createElement("td");
                     const  tdp = document.createElement("td");
@@ -104,14 +87,21 @@
                     include_box.type = "checkbox";
                     include_box.name = "Include";
                     include_box.value = 0;
+                    include_box.className = "vBox";
+                    include_box.dataset.value = value[1];
+                    include_box.addEventListener('change', updateTotal)
                     tdc.appendChild(include_box);
                     li.appendChild(tdn);
                     li.appendChild(tdp);
                     li.appendChild(tdc);
                     const list = document.getElementById("tour_list");
                     list.appendChild(li)
-                
             }
+
+
+
+
+
         }
         signuplists(window.domain + '/signup_extra')
     </script>
