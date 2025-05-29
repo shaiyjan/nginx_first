@@ -81,6 +81,7 @@ def read_signuplist_extend() -> dict:
         cursor.execute(
             """
             select 
+                s.TournamentID,
                 f.*,
                 s.in_tournament
                 from signuplists as s
@@ -94,4 +95,26 @@ def read_signuplist_extend() -> dict:
             """
         )
         return (dict(enumerate(cursor.fetchall())))
+    
+
+@app.get("/signup_overlap/{item_strlist}")
+def read_total_participants(item_strlist : str) -> dict:
+    if item_strlist == "": return {"0":0}
+    with mysql.connect(**db_dict) as db:
+        item_list= item_strlist.split("%")[0:-1]
+        cursor = db.cursor()
+        cursor.execute(
+            """
+            select 
+                count(distinct r.fencerID)
+            from registrations as r 
+            left join signuplists as s on s.name = r.competition
+            where s.TournamentID in (
+            """+ ",".join([str(ind) for ind in item_list]) +")"
+        )
+        return {"0":cursor.fetchall()[0][0]}
+    
+@app.get("/signup_overlap/")
+def read_empty_participants() -> dict:
+    return {"0":0}
     

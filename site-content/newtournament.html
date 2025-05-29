@@ -49,26 +49,31 @@
 
     <script>
 
+
         async function updateTotal() {
-            let total=0;
+            let liststr = "";
 
             const container=document.getElementById("tour_list");
             const checkboxes = container.querySelectorAll(".vBox");
 
-
-
             const total_text = document.getElementById("p_count")
-            console.log(total_text.value)
+
 
             checkboxes.forEach(checkbox => {
                 if (checkbox.checked){
-                    total += parseInt(checkbox.getAttribute('data-value'));
+                    liststr += checkbox.getAttribute('data-value') + "%";
                 }
 
             })
-            console.log(total)
-            total_text.value = total;
-        }
+            const response = await fetch(window.domain + "/signup_overlap/" + liststr)
+            if (!response.ok){
+                console.log("signup total failed")
+            }
+            const data = await response.json()
+            
+            total_text.value = data[0]
+            }
+
 
         async function signuplists(url) {
             const response = await fetch(url);
@@ -81,14 +86,14 @@
                     const  tdn = document.createElement("td");
                     const  tdp = document.createElement("td");
                     const  tdc = document.createElement("td");
-                    tdn.textContent = value[0];
-                    tdp.textContent = value[1];
+                    tdn.textContent = value[1];
+                    tdp.textContent = value[2];
                     const include_box = document.createElement("input");
                     include_box.type = "checkbox";
                     include_box.name = "Include";
                     include_box.value = 0;
                     include_box.className = "vBox";
-                    include_box.dataset.value = value[1];
+                    include_box.dataset.value = value[0] ;
                     include_box.addEventListener('change', updateTotal)
                     tdc.appendChild(include_box);
                     li.appendChild(tdn);
