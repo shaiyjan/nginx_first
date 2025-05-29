@@ -65,47 +65,27 @@ article {
   overflow-y: auto;
 }
 
-/*
-
-header {
-    background:crimson;
-    padding:px;
-    text-align: center;
-    font-size: large;
-    color:black;
-    height: auto;
+article table {
+font-family: arial, sans-serif;
+border-collapse: collapse;
+width: 100%;
 }
 
-nav {
-    float: left;
-    background: #ccc;
-    flex: 1;
-    padding: 20px;
-    height:auto;
+article td, th {
+border: 1px solid #dddddd;
+text-align: left;
+padding: 8px;
 }
 
-article {
-    background: white;
-    float: left;
-    padding: 20px;
-    width: auto;
-    flex: 1;
-    overflow-y: auto;
+article tr:nth-child(even) {
+background-color: #dddddd;
 }
 
-footer {
-    background: crimson;
-    padding: 10px;
-    text-align: center;
-    color: black;
-    height: 15px;
+article label, input {
+display:inline-block;
 }
 
-section::after {
-    content: "";
-    min-height: max-content;
-    display: table;
-    clear: both;
+article label {
+margin-bottom: 20px;
 }
 
-*/

@@ -4,6 +4,7 @@
 <!--# include virtual="template/header.html" -->
 <!--# include virtual="template/nav.html" -->
 
+<!--
     <style>
     table {
     font-family: arial, sans-serif;
@@ -21,10 +22,37 @@
     background-color: #dddddd;
     }
     </style>
-
+-->
 
 
 <article id="mainwindow">
+
+
+
+    <div style="margin-bottom:.5cm;">
+        <form id="metadata_form" >
+                <label for="tournament_name" style="margin-bottom:.5cm;"> Name of the Tournament:</label>
+                <input id="tournament_name" input="text">
+                <br>
+                <label for="mode-select">Choose a tournament mode:</label>
+                <select name="mode" id="mode-select">
+                    <option value="">--Please choose an option--</option>
+                    <option value="ko">K.O.</option>
+                    <option value="doubleko">Double K.O.</option>
+                    <option value="rr">Round-Robin</option>
+                </select>
+                <br>
+                <label for="pre_select" > Number of preliminaries: </label>
+                <select name="pre_num" id ="pre_select">
+                    <option value="0"> 0 </option>
+                    <option value="1" selected="selected"> 1 </option>
+                    <option value="2"> 2 </option>
+                </select>
+        </form>
+    </div>
+
+    <!--
+
     <div style="margin-bottom:.5cm;">
     <label for="tournament_name" > Name of the Tournament:</label>
     <input id="tournament_name" input="text"></input>
@@ -42,6 +70,8 @@
     </datalist>
 
     </div>
+
+    -->
 
     <div>
         <table id = "tour_list">
