@@ -3,6 +3,7 @@ html, body {
   margin: 0;
   padding: 0;
   height: 100vh;
+  width: 100vw;
   display: flex;
   flex-direction: column;
   font-family: sans-serif;
@@ -13,28 +14,55 @@ header {
   background-color: crimson;
   color: black;
   text-align: center;
-  padding: 10px;
+  padding-top: 10px;
+  padding-bottom: 10px;
   height: 120px;
-  box-sizing: border-box;
-}
-
-section{
-  background-color: white;
-  flex: 1;
-  padding: 0px;
-  height: auto;
-  box-sizing: border-box;
-  overflow-y: auto;
+  width: 100%;
 }
 
 footer {
   background-color: crimson;
   color: white;
   text-align: center;
-  padding: 10px;
+  align-content:  center;
+  padding-top: 10px;
+  padding-bottom: 10px;
   height: 40px;
-  box-sizing: border-box;
+  width: 100%;
 }
+
+section{
+  background-color: white;
+  flex: 1;
+  padding: 0px;
+  height:80%;
+  width: 100%;
+}
+
+
+nav {
+  float: left;
+  background-color: #ccc;
+  width: 25%;
+  width: 300px;
+  padding: 20px;
+  height: 100%;
+  box-sizing: border-box;
+  overflow-x: auto;
+}
+
+/* Scrollable article */
+article {
+  float:left;
+  background-color: white;
+  flex: 1;
+  padding: 20px;
+  height: 100%;
+  width:  calc(100% - 340px);
+  overflow-x: auto;
+}
+
+
 
 /* Main takes the remaining space */
 main {
@@ -44,26 +72,9 @@ main {
   min-height: 0;
 }
 
-/* Scrollable nav */
-nav {
-  float: left;
-  background-color: #ccc;
-  width: 25%;
-  max-width: 300px;
-  padding: 20px;
-  height: 100vh;
-  box-sizing: border-box;
-  overflow-y: auto;
-}
 
-/* Scrollable article */
-article {
-  background-color: white;
-  flex: 1;
-  padding: 20px;
-  box-sizing: border-box;
-  overflow-y: auto;
-}
+
+
 
 article table {
 font-family: arial, sans-serif;
@@ -87,4 +98,66 @@ display:inline-block;
 
 article label {
 margin-bottom: 20px;
+}
+
+#groups_frame {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  border: 1px solid white;
+  width: 100%;
+  background: red;
+}
+
+#groups_unsorted {
+  display: flex;
+  flex-direction: column;
+  width: 200px;
+  background-color: lightcoral;
+  padding: 10px;
+  margin-right: 10px;
+  }
+
+#groups_group {
+  display: flex;
+  background-color: white;
+  padding: 10px;
+  flex-direction:  column;
+  width: calc(100%-200px);
+  box-sizing: border-box;
+  overflow-y: auto;
+}
+
+#groups_group .group {
+  border: 1px solid black;
+  display: flex;
+  margin-top: 5px;
+  margin-bottom: 5px;
+  width:fit-content;
+}
+
+.drag_fencer {
+  height: 60px;
+  width: 100px;
+  background-color: lightgray;
+  margin: 5px;
+}
+
+.drag_fencer p {
+  white-space: pre;         /* Preserve spaces and line breaks */
+  overflow: hidden;         /* Cut off overflow */
+  text-overflow: ellipsis;  /* Optional: add "..." at the end */
+  width: 95px;             /* Set max width */
+}
+
+
+
+#groups_group .dropzone {
+  height: 90px;
+  width: 120px;
+  background-color: grey;
+  border: 2px dashed;
+  margin: 5px;
+  margin: 5px;
+  align-content: top;
 }
