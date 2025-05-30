@@ -136,12 +136,13 @@ async function signuplists(url) {
 
 }
 
-async function loadGroupSetup(url=window.domain + "123") {
+async function loadGroupSetup(url=window.domain + "/signup_overlap_particpants/" + window.sessionStorage.liststr) {
     let gframe = document.getElementById("groups_frame")
     gframe.innerHTML="";
 
 
-
+    const response = await fetch(url);
+    const data = await response.json();
 
     let groupsdiv = document.createElement("div");
     let inner_div = document.createElement("div");
@@ -168,14 +169,13 @@ async function loadGroupSetup(url=window.domain + "123") {
     /*
     Add drag elements to unassigned participants;
     */
-    for (let i=1;i<=window.sessionStorage.ptotal; i++){
-
+   for (const [key,fencer_data] of Object.entries(data)) {
         let drag_ele = document.createElement("div");
-        drag_ele.id= "drag_fencer"+i;
+        drag_ele.id= "drag_fencer"+ fencer_data[2];
         drag_ele.className = "drag_fencer";
         drag_ele.draggable =true;
         /*Needs to be adjusted when fetch is implemented! */
-        drag_ele.FencerId= i;
+        drag_ele.FencerId= fencer_data[2];
         drag_ele.addEventListener("dragstart", function (e) {
             e.dataTransfer.setData("text/plain", drag_ele.id);
         });
@@ -184,14 +184,13 @@ async function loadGroupSetup(url=window.domain + "123") {
         drag_ele_inner.style="margin: 0px";
         /*Needs to be adjusted when fetch is implemented! */
         drag_ele_inner.textContent=
-                "FirstNameXXX \n " +
-                "LastName xxxxxxx \n" + 
-                "ClubName xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+                fencer_data[0] + "\n " +
+                fencer_data[1] + "\n" + 
+                fencer_data[3]
                 ;
         drag_ele.appendChild(drag_ele_inner);
         inner_div.appendChild(drag_ele);
-    }
-
+    };
 
     groupsdiv = document.createElement("div");
 
