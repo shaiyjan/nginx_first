@@ -62,8 +62,6 @@ article {
   overflow-x: auto;
 }
 
-
-
 /* Main takes the remaining space */
 main {
   flex: 1;
@@ -71,10 +69,6 @@ main {
   overflow: hidden;
   min-height: 0;
 }
-
-
-
-
 
 article table {
 font-family: arial, sans-serif;
@@ -148,8 +142,6 @@ margin-bottom: 20px;
   text-overflow: ellipsis;  /* Optional: add "..." at the end */
   width: 95px;             /* Set max width */
 }
-
-
 
 #groups_group .dropzone {
   height: 90px;

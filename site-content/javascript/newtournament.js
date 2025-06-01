@@ -8,20 +8,24 @@ if (window.sessionStorage.tname) {
 if (window.sessionStorage.tmode) {
     document.getElementById('mode_select').value = window.sessionStorage.tmode;
 }
+else {
+    document.getElementById('mode_select').value="ko";
+    window.sessionStorage.tmode="ko";
+}
 
-if (window.sessionStorage.pcount) {
-    document.getElementById('pre_select').value = window.sessionStorage.pcount;
+if (window.sessionStorage.precount) {
+    document.getElementById('pre_select').value = window.sessionStorage.precount;
 }
 else {
-        window.sessionStorage.pcount = 1
+        window.sessionStorage.precount = 1
 }
-};
+
+}
 
 
 /* On user induced change of group count and size reavaluate the other. */
 async function reCalcCount() {
     let total_text = document.getElementById("p_count");
-    let total_v = parseInt(total_text.value);
 
     let group_s_text = document.getElementById("group_s");
     let group_c_text = document.getElementById("group_c");
@@ -36,7 +40,6 @@ async function reCalcCount() {
 
 async function reCalcSize() {
     let total_text = document.getElementById("p_count");
-    let total_v = parseInt(total_text.value);
 
     let group_s_text = document.getElementById("group_s");
     let group_c_text = document.getElementById("group_c");
@@ -62,13 +65,13 @@ async function updateTotal() {
 
     checkboxes.forEach(checkbox => {
         if (checkbox.checked){
-            window.sessionStorage.liststr += checkbox.getAttribute('data-value') + "%";
+            window.sessionStorage.liststr += checkbox.getAttribute('data-value') + "_";
         }
 
     })
     const response = await fetch(window.domain + "/signup_overlap/" + window.sessionStorage.liststr)
     if (!response.ok){
-        console.log("signup total failed")
+        console.log("Signup total failed from: " + url)
     }
     const data = await response.json()
     
@@ -140,7 +143,6 @@ async function loadGroupSetup(url=window.domain + "/signup_overlap_particpants/"
     let gframe = document.getElementById("groups_frame")
     gframe.innerHTML="";
 
-
     const response = await fetch(url);
     const data = await response.json();
 
@@ -174,7 +176,6 @@ async function loadGroupSetup(url=window.domain + "/signup_overlap_particpants/"
         drag_ele.id= "drag_fencer"+ fencer_data[2];
         drag_ele.className = "drag_fencer";
         drag_ele.draggable =true;
-        /*Needs to be adjusted when fetch is implemented! */
         drag_ele.FencerId= fencer_data[2];
         drag_ele.addEventListener("dragstart", function (e) {
             e.dataTransfer.setData("text/plain", drag_ele.id);
@@ -182,11 +183,10 @@ async function loadGroupSetup(url=window.domain + "/signup_overlap_particpants/"
 
         let drag_ele_inner = document.createElement("p");
         drag_ele_inner.style="margin: 0px";
-        /*Needs to be adjusted when fetch is implemented! */
         drag_ele_inner.textContent=
                 fencer_data[0] + "\n " +
                 fencer_data[1] + "\n" + 
-                fencer_data[3]
+                fencer_data[1]
                 ;
         drag_ele.appendChild(drag_ele_inner);
         inner_div.appendChild(drag_ele);
@@ -196,7 +196,6 @@ async function loadGroupSetup(url=window.domain + "/signup_overlap_particpants/"
 
     groupsdiv.id="groups_group";
     gframe.appendChild(groupsdiv);
-
     for (let i =1; i<= window.sessionStorage.gcount; i++) {
         let groupdiv = document.createElement("div");
         groupdiv.className="group";
@@ -216,15 +215,67 @@ async function loadGroupSetup(url=window.domain + "/signup_overlap_particpants/"
             });
             part_drop_zone.addEventListener("drop", function (e) {
                 e.preventDefault();
-                const id = e.dataTransfer.getData("text/plain");
-                const draggedElement = document.getElementById(id);
-                part_drop_zone.appendChild(draggedElement);
+                
+                // Only allow drop if the drop zone is empty
+                if (part_drop_zone.children.length === 0) {
+                    const id = e.dataTransfer.getData("text/plain");
+                    const draggedElement = document.getElementById(id);
+                    part_drop_zone.appendChild(draggedElement);
+                } else {
+                    const id = e.dataTransfer.getData("text/plain");
+                    const draggedElement = document.getElementById(id);
+                    const replaceElement = part_drop_zone.children[0];
+                    const oldParent = draggedElement.parentElement;
+
+                    oldParent.appendChild(replaceElement);
+                    part_drop_zone.appendChild(draggedElement);
+                }
             });
             part_drop_zone.textContent = "Fencer" + j ;
             groupdiv.appendChild(part_drop_zone);
         }
     }
-
 }
 
+async function sendData() {
+    if (window.sessionStorage.tname &&
+        window.sessionStorage.gcount &&
+        window.sessionStorage.gsize &&
+        window.sessionStorage.liststr &&
+        window.sessionStorage.tmode
+    ) {
+    try {
+        await fetch(window.domain + "/submitTournament",
+        {
+            mode: 'no-cors',
+            method: "POST",
+            headers: {
+            "Content-type": "application/json",
+            },
+            body: JSON.stringify(
+                {
+                    tname: "123"
+                }
+            )
+        })
+        }
+    catch (error) {
+            console.error("Error sending data:", error);
+        }
+    }
+    else {
+        alert("Not all form fields are filled.")
+    }
+}
 
+async function sendData1() {
+            body: JSON.stringify(
+                {
+                    tname: window.sessionStorage.tname,
+                    gcount: window.sessionStorage.gcount,
+                    gsize: window.sessionStorage.gsize,
+                    liststr: window.sessionStorage.liststr,
+                    tmode: window.sessionStorage.tmode
+                }
+            )
+}

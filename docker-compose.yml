@@ -5,8 +5,9 @@ services:
     restart: always
 #    build: ./sql/
     #command: --init-file /data/application/init.sql
-    #volumes:
-    #  - ./sql/init.sql:/data/application/init.sql
+    volumes:
+      - sql_data:/var/lib/mysql
+      #  - ./sql/init.sql:/data/application/init.sql
     ports:
       - "3306:3306"
     networks:
@@ -48,7 +49,13 @@ services:
     networks:
         net:
           ipv4_address: 172.16.103.100
-      
+
+volumes:
+  sql_data:
+    driver: local
+
+
+
 networks:
   net:
     driver: bridge

@@ -102,7 +102,7 @@ def read_signuplist_extend() -> dict:
 def read_total_participants(item_strlist : str) -> dict:
     if item_strlist == "": return {"0":0}
     with mysql.connect(**db_dict) as db:
-        item_list= item_strlist.split("%")[0:-1]
+        item_list= item_strlist.split("_")[0:-1]
         cursor = db.cursor()
         cursor.execute(
             """
@@ -119,7 +119,7 @@ def read_total_participants(item_strlist : str) -> dict:
 def read_total_participants_per_signup(item_strlist : str) -> dict:
     if item_strlist== "": return {"0":0}
     with mysql.connect(**db_dict) as db:
-        item_list= item_strlist.split("%")[0:-1]
+        item_list= item_strlist.split("_")[0:-1]
         cursor = db.cursor()
         cursor.execute(
             """
@@ -151,3 +151,8 @@ def read_total_participants_per_signup(item_strlist : str) -> dict:
             )
 
         return dict(enumerate(cursor.fetchall()))
+    
+@app.post("/submitTournament")
+def create_tournament(items):
+    print(type(items))
+    print(items)
