@@ -238,35 +238,21 @@ async function loadGroupSetup(url=window.domain + "/signup_overlap_particpants/"
 }
 
 async function sendData() {
-    if (window.sessionStorage.tname &&
-        window.sessionStorage.gcount &&
-        window.sessionStorage.gsize &&
-        window.sessionStorage.liststr &&
-        window.sessionStorage.tmode
-    ) {
-    try {
-        await fetch(window.domain + "/submitTournament",
-        {
-            mode: 'no-cors',
-            method: "POST",
-            headers: {
-            "Content-type": "application/json",
-            },
-            body: JSON.stringify(
-                {
-                    tname: "123"
-                }
-            )
-        })
-        }
-    catch (error) {
-            console.error("Error sending data:", error);
-        }
-    }
-    else {
-        alert("Not all form fields are filled.")
-    }
+const params = new URLSearchParams({
+  tournament: "SummerCup",
+  location: "Berlin",
+  maxRounds: "5",
+  timeLimit: "90"
+});
+
+fetch(window.domain + "/submitTournament?" + params.toString(), {
+  method: "POST"
+})
+.then(res => res.json())
+.then(data => console.log(data))
+.catch(err => console.error("Error:", err));
 }
+
 
 async function sendData1() {
             body: JSON.stringify(

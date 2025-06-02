@@ -42,13 +42,19 @@ services:
 
   python:
     container_name: backco
-    build:
-       ./python/
-    ports:
-      - "80:80"
+    image: python:3.9
+    working_dir: /code
+    volumes:
+      - ./python/app:/code/app           # mount app folder
+      - ./python/requirements.txt:/code/requirements.txt
+    command: >
+      sh -c "pip install --no-cache-dir --upgrade -r /code/requirements.txt &&
+             uvicorn app.main:app --host 0.0.0.0 --port 80 --proxy-headers --reload"
+    #ports:
+    #  - "80:80"
     networks:
-        net:
-          ipv4_address: 172.16.103.100
+      net:
+        ipv4_address: 172.16.103.100
 
 volumes:
   sql_data:

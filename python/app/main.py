@@ -153,6 +153,10 @@ def read_total_participants_per_signup(item_strlist : str) -> dict:
         return dict(enumerate(cursor.fetchall()))
     
 @app.post("/submitTournament")
-def create_tournament(items):
-    print(type(items))
-    print(items)
+def submit_tournament(
+    tournament: str,
+    location: str,
+    maxRounds: int = 3,
+    timeLimit: int = 60
+):
+    return {"ok": True}
