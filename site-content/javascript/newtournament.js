@@ -30,12 +30,10 @@ async function reCalcCount() {
     let group_s_text = document.getElementById("group_s");
     let group_c_text = document.getElementById("group_c");
 
-    
     window.sessionStorage.gsize=document.getElementById("group_s").value;
     window.sessionStorage.gcount=Math.ceil( parseInt(total_text.value)  / parseInt(group_s_text.value))
 
     group_c_text.value = window.sessionStorage.gcount;
-
 }
 
 async function reCalcSize() {
@@ -44,13 +42,10 @@ async function reCalcSize() {
     let group_s_text = document.getElementById("group_s");
     let group_c_text = document.getElementById("group_c");
 
-
-        
     window.sessionStorage.gsize=Math.ceil( parseInt(total_text.value)  / parseInt(group_c_text.value))
     window.sessionStorage.gcount=document.getElementById("group_c").value;
 
     group_s_text.value = window.sessionStorage.gsize;
-
 }
 
 
@@ -61,6 +56,9 @@ async function updateTotal() {
     const checkboxes = container.querySelectorAll(".vBox");
 
     const total_text = document.getElementById("p_count")
+    const group_s_text = document.getElementById("group_s");
+    const group_c_text = document.getElementById("group_c");
+    const submit_button = document.getElementById("submit");
 
 
     checkboxes.forEach(checkbox => {
@@ -69,31 +67,29 @@ async function updateTotal() {
         }
 
     })
-    const response = await fetch(window.domain + "/signup_overlap/" + window.sessionStorage.liststr)
-    if (!response.ok){
-        console.log("Signup total failed from: " + url)
-    }
-    const data = await response.json()
-    
-    window.sessionStorage.ptotal = data[0]
-    total_text.value = data[0]
-
-    let group_s_text = document.getElementById("group_s");
-    let group_c_text = document.getElementById("group_c");
-    let submit_button = document.getElementById("submit");
 
 
-    if (total_text.value== "0") {
+    if (window.sessionStorage.liststr == "") {
         group_c_text.setAttribute('disabled', '');
         group_s_text.setAttribute('disabled', '');
         submit_button.setAttribute('disabled', '')
         group_s_text.value= "-";
         group_c_text.value= "-";
+        total_text.value= "0";
         window.sessionStorage.gsize = 0;
         window.sessionStorage.gcount = 0;
-
+        window.sessionStorage.ptotal = 0;
     }
     else {
+        const response = await fetch(window.domain + "/signup_overlap/" + window.sessionStorage.liststr)
+        if (!response.ok){
+            console.log("Signup total failed from: " + url)
+        }
+        const data = await response.json()
+        
+        window.sessionStorage.ptotal = data[0]
+        total_text.value = data[0]
+
         group_c_text.removeAttribute('disabled');
         group_s_text.removeAttribute('disabled');
         submit_button.removeAttribute('disabled');
@@ -207,38 +203,63 @@ async function loadGroupSetup(url=window.domain + "/signup_overlap_particpants/"
         groupdiv.appendChild(inner);
         groupsdiv.appendChild(groupdiv);
 
-        for (let j = 1; j<= window.sessionStorage.gsize; j++){
-            let part_drop_zone = document.createElement("div");
-            part_drop_zone.id = "participant_"+i+"_"+j;
-            part_drop_zone.className="dropzone";
-            part_drop_zone.addEventListener("dragover", function (e) {
-                e.preventDefault(); // Must prevent default to allow drop
-            });
-            part_drop_zone.addEventListener("drop", function (e) {
-                e.preventDefault();
-                
-                // Only allow drop if the drop zone is empty
-                if (part_drop_zone.children.length === 0) {
-                    const id = e.dataTransfer.getData("text/plain");
-                    const draggedElement = document.getElementById(id);
-                    part_drop_zone.appendChild(draggedElement);
-                } else {
-                    const id = e.dataTransfer.getData("text/plain");
-                    const draggedElement = document.getElementById(id);
-                    const replaceElement = part_drop_zone.children[0];
-                    const oldParent = draggedElement.parentElement;
 
-                    oldParent.appendChild(replaceElement);
-                    part_drop_zone.appendChild(draggedElement);
-                }
-            });
-            part_drop_zone.textContent = "Fencer" + j ;
-            groupdiv.appendChild(part_drop_zone);
-        }
+
+        let part_drop_zone = document.createElement("div");
+        part_drop_zone.id = "group_"+i;
+        part_drop_zone.className="dropzone";
+        part_drop_zone.addEventListener("dragover", function (e) {
+            e.preventDefault(); // Must prevent default to allow drop
+        });
+        part_drop_zone.addEventListener("drop", function (e) {
+            e.preventDefault();
+            
+            // Only allow drop if the drop zone is empty
+            if (part_drop_zone.children.length === parseInt(window.sessionStorage.gsize)) {
+                const id = e.dataTransfer.getData("text/plain");
+                let draggedElement = document.getElementById(id);
+                let replaceElement = part_drop_zone.children[0];
+                let oldParent = draggedElement.parentElement;
+
+                oldParent.appendChild(replaceElement);
+                part_drop_zone.appendChild(draggedElement);
+            } else {
+                let id = e.dataTransfer.getData("text/plain");
+                let draggedElement = document.getElementById(id);
+                part_drop_zone.appendChild(draggedElement);
+            }
+        });
+        groupdiv.appendChild(part_drop_zone);
     }
 }
 
 async function sendData() {
+const uncont = document.getElementById("unassigned_inner")
+
+if (uncont.childElementCount > 0){
+    window.alert("Unassigned fencers")
+}
+else {
+
+
+let groups = new Array(window.sessionStorage.gcount);
+
+for (let i= 1; i<= window.sessionStorage.gcount; i++) {
+    let groupcont = document.getElementById("group_" + i);
+    let group = new Array();
+    for (let ele of groupcont.children) {
+        console.log(ele.getAttribute("fencerid"))
+        group.push(ele.getAttribute("fencerid"));
+    }
+    groups.push(group)
+    console.log(group)
+}
+console.log(groups)
+}
+
+
+
+
 const params = new URLSearchParams({
   tournament: "SummerCup",
   gsize: window.sessionStorage.gsize,
@@ -247,12 +268,7 @@ const params = new URLSearchParams({
   precount: window.sessionStorage.precount,
   groups: "test"
 });
-const pcont = document.getElementById("unassigned_inner")
-for (let ele of pcont.children) {
-    console.log(ele.getAttribute("fencerid"));
-}
-const gcont = document.getElementById("group_group")
-console.log()
+
 }
 
 
