@@ -148,6 +148,7 @@ async function loadGroupSetup(url=window.domain + "/signup_overlap_particpants/"
 
     let groupsdiv = document.createElement("div");
     let inner_div = document.createElement("div");
+    inner_div.id = "unassigned_inner";
     let inner = document.createElement("p");
 
     groupsdiv.id="groups_unsorted";
@@ -173,10 +174,10 @@ async function loadGroupSetup(url=window.domain + "/signup_overlap_particpants/"
     */
    for (const [key,fencer_data] of Object.entries(data)) {
         let drag_ele = document.createElement("div");
-        drag_ele.id= "drag_fencer"+ fencer_data[2];
+        drag_ele.id= "dragfencer_"+ fencer_data[2];
         drag_ele.className = "drag_fencer";
         drag_ele.draggable =true;
-        drag_ele.FencerId= fencer_data[2];
+        drag_ele.setAttribute("FencerId",fencer_data[2]);
         drag_ele.addEventListener("dragstart", function (e) {
             e.dataTransfer.setData("text/plain", drag_ele.id);
         });
@@ -186,7 +187,7 @@ async function loadGroupSetup(url=window.domain + "/signup_overlap_particpants/"
         drag_ele_inner.textContent=
                 fencer_data[0] + "\n " +
                 fencer_data[1] + "\n" + 
-                fencer_data[1]
+                fencer_data[3]
                 ;
         drag_ele.appendChild(drag_ele_inner);
         inner_div.appendChild(drag_ele);
@@ -240,6 +241,24 @@ async function loadGroupSetup(url=window.domain + "/signup_overlap_particpants/"
 async function sendData() {
 const params = new URLSearchParams({
   tournament: "SummerCup",
+  gsize: window.sessionStorage.gsize,
+  gcount: window.sessionStorage.gcount,
+  tmode: window.sessionStorage.tmode,
+  precount: window.sessionStorage.precount,
+  groups: "test"
+});
+const pcont = document.getElementById("unassigned_inner")
+for (let ele of pcont.children) {
+    console.log(ele.getAttribute("fencerid"));
+}
+const gcont = document.getElementById("group_group")
+console.log()
+}
+
+
+async function sendData1() {
+const params = new URLSearchParams({
+  tournament: "SummerCup",
   location: "Berlin",
   maxRounds: "5",
   timeLimit: "90"
@@ -251,17 +270,4 @@ fetch(window.domain + "/submitTournament?" + params.toString(), {
 .then(res => res.json())
 .then(data => console.log(data))
 .catch(err => console.error("Error:", err));
-}
-
-
-async function sendData1() {
-            body: JSON.stringify(
-                {
-                    tname: window.sessionStorage.tname,
-                    gcount: window.sessionStorage.gcount,
-                    gsize: window.sessionStorage.gsize,
-                    liststr: window.sessionStorage.liststr,
-                    tmode: window.sessionStorage.tmode
-                }
-            )
 }
