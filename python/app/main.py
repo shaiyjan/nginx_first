@@ -155,8 +155,16 @@ def read_total_participants_per_signup(item_strlist : str) -> dict:
 @app.post("/submitTournament")
 def submit_tournament(
     tournament: str,
-    location: str,
-    maxRounds: int = 3,
-    timeLimit: int = 60
-):
+    gsize: int,
+    gcount: int,
+    tmode: str,
+    precount: int,
+    grp: str):
+
+    print(grp)
+    groups = grp.split("#")[1:]
+    print(groups)
+    groups = [inner.strip(",").split(",") for inner in groups]
+    print(groups)
+
     return {"ok": True}

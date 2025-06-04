@@ -146,9 +146,8 @@ with open("participants.csv") as csvfile:
             dict(zip(header,row))
         )
 
-insert()
 
-def copy_tournaments() -> dict:
+def create_tournaments() -> dict:
     with mysql.connect(**db_dict) as db:
         cursor =db.cursor()
         cursor.execute(
@@ -161,24 +160,20 @@ def copy_tournaments() -> dict:
         for tournament in tournaments:
             ret_dict[tournament[0]]=tournament[1]
         
-        print(tournaments)
+
         cursor.execute(
             """
             create table if not exists tournaments(
             TournamentId int NOT NULL AUTO_INCREMENT,
-            name varchar(200),
+            name varchar(200) NOT NULL,
+            group_size int NOT NULL,
+            group_count int NOT NULL,
+            tournament_mode varchar(200) NOT NULL,
+            preliminaries int NOT NULL,
+            started bool NOT NULL default false,
             PRIMARY KEY (TournamentID)
             )
             """
         )
 
-        cursor.executemany(
-        """
-        INSERT INTO tournaments (name) VALUES
-        (%(name)s)
-        """,
-            [{"name": "Tournament " + tup[1]} for tup in tournaments ]
-        )
-        db.commit()
-
-copy_tournaments()
+create_tournaments()

@@ -234,56 +234,39 @@ async function loadGroupSetup(url=window.domain + "/signup_overlap_particpants/"
 }
 
 async function sendData() {
-const uncont = document.getElementById("unassigned_inner")
+    const uncont = document.getElementById("unassigned_inner")
 
-if (uncont.childElementCount > 0){
-    window.alert("Unassigned fencers")
-}
-else {
-
-
-let groups = new Array(window.sessionStorage.gcount);
-
-for (let i= 1; i<= window.sessionStorage.gcount; i++) {
-    let groupcont = document.getElementById("group_" + i);
-    let group = new Array();
-    for (let ele of groupcont.children) {
-        console.log(ele.getAttribute("fencerid"))
-        group.push(ele.getAttribute("fencerid"));
+    if (uncont.childElementCount > 0){
+        window.alert("Unassigned fencers")
     }
-    groups.push(group)
-    console.log(group)
-}
-console.log(groups)
-}
+    else {
+        let groups = new Array(window.sessionStorage.gcount);
 
+        for (let i= 1; i<= window.sessionStorage.gcount; i++) {
+            let groupcont = document.getElementById("group_" + i);
+            let group = new Array();
+            group.push("#")
+            for (let ele of groupcont.children) {
+                group.push(ele.getAttribute("fencerid"));
+            }
+            groups.push(group)
+        }
+        console.log(groups)
 
+        const params = new URLSearchParams({
+        tournament: window.sessionStorage.tname,
+        gsize: window.sessionStorage.gsize,
+        gcount: window.sessionStorage.gcount,
+        tmode: window.sessionStorage.tmode,
+        precount: window.sessionStorage.precount,
+        grp: groups
+        });
 
-
-const params = new URLSearchParams({
-  tournament: "SummerCup",
-  gsize: window.sessionStorage.gsize,
-  gcount: window.sessionStorage.gcount,
-  tmode: window.sessionStorage.tmode,
-  precount: window.sessionStorage.precount,
-  groups: "test"
-});
-
-}
-
-
-async function sendData1() {
-const params = new URLSearchParams({
-  tournament: "SummerCup",
-  location: "Berlin",
-  maxRounds: "5",
-  timeLimit: "90"
-});
-
-fetch(window.domain + "/submitTournament?" + params.toString(), {
-  method: "POST"
-})
-.then(res => res.json())
-.then(data => console.log(data))
-.catch(err => console.error("Error:", err));
+        fetch(window.domain + "/submitTournament?" + params.toString(), {
+        method: "POST"
+        })
+        .then(res => res.json())
+        .then(data => console.log(data))
+        .catch(err => console.error("Error:", err));
+    }
 }
