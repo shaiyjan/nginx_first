@@ -39,17 +39,21 @@ def read_signuplists() -> dict:
         return ret_dict
     
 # Get the tournaments to fetch id and name
-@app.get("/tournaments")
+@app.get("/registrations")
 def read_tournaments() -> dict:
     with mysql.connect(**db_dict) as db:
         cursor =db.cursor()
         cursor.execute(
             """
-            select * from tournaments;
+            select * from signuplists;
             """
         )
-        tournaments =cursor.fetchall()
-        return dict(tournaments)
+        lists =cursor.fetchall()
+        ret = dict()
+        for lis in lists:
+            ret[lis[0]]=lis[1]
+        print(ret)
+        return ret
 
 
 # Get all indiviuals signed up the the competition with id = list_id
@@ -60,15 +64,21 @@ def read_participants(list_id : int) -> dict:
         cursor.execute(
             """
             select 
+                r.registrationID,
                 r.lastname,
                 r.firstname,
-                r.club
+                r.club,
+                r.paid,
+                r.recipe,
+                r.attandence,
+                r.attest
             from registrations as r
             left join signuplists as s on s.name = r.competition
             where s.tournamentid =
             """  + str(list_id) + ";"
                        )
         ret = cursor.fetchall()
+        print(ret)
         return dict(enumerate(ret))
 
 
@@ -168,3 +178,17 @@ def submit_tournament(
     print(groups)
 
     return {"ok": True}
+
+
+@app.post("/changeBool")
+def change_bool(
+    fencer_id,
+    field_name,
+    bool_val):
+      with mysql.connect(**db_dict) as db:
+        cursor = db.cursor()
+        cursor.execute("""
+        update registrations 
+            set """ + field_name + "=" +  bool_val + """
+        where FencerId = """ + fencer_id +";")  
+        return {"ok": True}

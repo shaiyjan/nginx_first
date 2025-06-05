@@ -28,7 +28,7 @@ def insert():
             nation varchar(3),
             region varchar(50),
             club varchar(100),
-            paid varchar(10),
+            paid bool,
             paymentmethod varchar(100),
             paymentid  varchar(50),
             partner varchar(100),
@@ -41,9 +41,9 @@ def insert():
             orderid varchar(50),
             natid varchar(50),
             competition varchar(200),
-            recipe varchar(3),
-            attandence varchar(3),
-            attest varchar(3),
+            recipe bool,
+            attandence bool,
+            attest bool,
             PRIMARY KEY(RegistrationID)
             )
             """
@@ -72,10 +72,7 @@ def insert():
                     state,
                     orderid,
                     natid,
-                    competition,
-                    recipe,
-                    attandence ,
-                    attest)
+                    competition)
             values 
             (%(id)s,
             %(lastname)s,
@@ -97,10 +94,7 @@ def insert():
             %(state)s,
             %(order)s,
             %(natid)s,
-            %(competition)s,
-            %(recipe)s,
-            %(attandence)s,
-            %(attest)s)
+            %(competition)s)
             """,
             participants)
         mydb.commit()
@@ -142,9 +136,13 @@ with open("participants.csv") as csvfile:
     header=next(reader)
     for row in reader:
         row = [ele.strip() for ele in row]
-        participants.append(
-            dict(zip(header,row))
-        )
+        fencer_dict = dict(zip(header,row))
+        if fencer_dict["paid"]=="yes":
+            fencer_dict["paid"] = 1
+        else:
+            fencer_dict["paid"] = 0
+        participants.append(fencer_dict)
+        
 
 
 def create_tournaments() -> dict:
@@ -176,4 +174,6 @@ def create_tournaments() -> dict:
             """
         )
 
-create_tournaments()
+print(participants)
+insert()
+#create_tournaments()

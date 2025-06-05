@@ -16,15 +16,19 @@
     <h3 id=tourName>Failed to Fetch</h3>
     <table id="part_info">
         <tr>
-            <th>Firstname</th>
             <th>Lastname</th>
+            <th>Firstname</th>
             <th>Club</th>
+            <th>Attendant</th>
+            <th>Attestation</th>
+            <th>Paid</th>
+            <th>Recipe</th>
         </tr>
     </table>
 </article>
 
 <script>
-    async function tournament_name(url){
+    async function registration_name(url){
         const response = await fetch(url);
         if (!response.ok) {
             console.log("failed to fetch participant data")
@@ -33,12 +37,20 @@
         const header = document.getElementById("tourName");
         header.textContent = data[window.tourID];
     }
-    tournament_name(window.domain + '/tournaments');
+    registration_name(window.domain + '/registrations');
 
 </script>
 
 
 <script>
+    async function checkBoxChange(fencerId,fieldName,boolVal){
+        const params = new URLSearchParams({
+            fencer_id : fencerId,
+            field_name: fieldName,
+            bool_cal: boolVal
+        })
+    }
+
     async function participants(url) {
         const response = await fetch(url);
         if (!response.ok) {
@@ -48,16 +60,76 @@
         const table = document.getElementById("part_info");
         for (const [key,value] of Object.entries(data)) {
             const tr = document.createElement("tr");
-            const tsf =document.createElement("td"); 
-            const tsl =document.createElement("td");
-            const tsc =document.createElement("td");
-            tsf.textContent = value[0];
-            tsl.textContent = value[1];
-            tsc.textContent = value[2];
-            tr.appendChild(tsf)
-            tr.appendChild(tsl)
-            tr.appendChild(tsc)
-            table.appendChild(tr)
+            const tsf = document.createElement("td"); 
+            const tsl = document.createElement("td");
+            const tsc = document.createElement("td");
+            const attendcb = document.createElement("input");
+            const attestcb = document.createElement("input");
+            const paidcb = document.createElement("input");
+            const reccb = document.createElement("input");
+            
+            const tdAttend = document.createElement("td");
+            const tdAttest = document.createElement("td");
+            const tdPaid = document.createElement("td");
+            const tdRec = document.createElement("td");
+
+            tdAttend.style.textAlign = "center";
+            tdAttend.style.verticalAlign = "middle";
+            tdAttest.style.textAlign = "center";
+            tdAttest.style.verticalAlign = "middle";
+            tdPaid.style.textAlign = "center";
+            tdPaid.style.verticalAlign = "middle";
+            tdRec.style.textAlign = "center";
+            tdRec.style.verticalAlign = "middle";
+            
+
+            attendcb.type = "checkbox";
+            attestcb.type = "checkbox";
+            paidcb.type = "checkbox";
+            reccb.type = "checkbox";
+
+            /*
+            response ->
+            0: RegistrationID
+            1: Lastname,
+            2: Firstname,
+            3: Club,
+            4: paid,
+            5: recipe,
+            6: attendence,
+            7: attest    
+            */
+            tsf.textContent = value[1];
+            tsl.textContent = value[2];
+            tsc.textContent = value[3];
+
+            attendcb.addEventListener("change",function () {
+                checkBoxchange(value[0], attendence, checkbox.checked)
+            });
+            attestcb.addEventListener("change",function () {
+                checkBoxchange(value[0], attest, checkbox.checked)
+            });
+            paidcb.addEventListener("change",function () {
+                checkBoxchange(value[0], paid, checkbox.checked)
+            });
+            reccb.addEventListener("change",function () {
+                checkBoxchange(value[0], recipe, checkbox.checked)
+            });
+
+            tdAttend.appendChild(attendcb);
+            tdAttest.appendChild(attestcb);
+            tdPaid.appendChild(paidcb);
+            tdRec.appendChild(reccb);
+
+            tr.appendChild(tsf);
+            tr.appendChild(tsl);
+            tr.appendChild(tsc);
+            tr.appendChild(tdAttend);
+            tr.appendChild(tdAttest);
+            tr.appendChild(tdPaid);
+            tr.appendChild(tdRec);
+            table.appendChild(tr);
+
         }
     }
     participants(window.domain + '/signuplist/' + window.tourID)
