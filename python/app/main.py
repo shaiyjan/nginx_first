@@ -98,13 +98,14 @@ def read_signuplist_extend() -> dict:
                 left join (
                 select 
                     r.competition,
-                    count(distinct r.FencerId)
+                    COUNT(DISTINCT CASE WHEN r.Attandence THEN r.FencerId ELSE NULL END)
                 from registrations as r 
                 group by r.competition
                 ) as f  on s.name = f.competition
             """
         )
-        return (dict(enumerate(cursor.fetchall())))
+        ret_dict = dict(enumerate(cursor.fetchall()))
+        return ret_dict
     
 # get all registrations with tournament id in item_strlist, seperated by %
 # there is an additional trailing %!
@@ -121,7 +122,8 @@ def read_total_participants(item_strlist : str) -> dict:
             from registrations as r 
             left join signuplists as s on s.name = r.competition
             where s.TournamentID in (
-            """+ ",".join([str(ind) for ind in item_list]) +")"
+            """+ ",".join([str(ind) for ind in item_list]) +""")
+            and r.attandence = 1"""
         )
         return {"0":cursor.fetchall()[0][0]}
     
@@ -139,12 +141,12 @@ def read_total_participants_per_signup(item_strlist : str) -> dict:
                     r.lastname,
                     r.Fencerid,
                     r.club,
-                    s.TournamentID
-                from registrations as r 
-                left join signuplists as s on s.name = r.competition
-                where s.TournamentID in ("""
-                + ",".join([str(ind) for ind in item_list]) + """)
-                ),
+                    s.TournamentID,
+                    r.attandence
+                from registrations as r
+                left join signuplists as s on s.name = r.competition and 
+                s.TournamentID in ("""
+                + ",".join([str(ind) for ind in item_list]) + """)),
                 min_tournament as (
                 select 
                     FencerID,
@@ -157,10 +159,12 @@ def read_total_participants_per_signup(item_strlist : str) -> dict:
             left join total
                 on total.FencerID = mt.FencerId 
                 and total.tournamentID = mt.min_tID
+            where total.attandence = 1
             """
             )
-
-        return dict(enumerate(cursor.fetchall()))
+        ret_dict = dict(enumerate(cursor.fetchall()))
+        print(ret_dict)
+        return ret_dict
     
 @app.post("/submitTournament")
 def submit_tournament(

@@ -28,7 +28,7 @@ def insert():
             nation varchar(3),
             region varchar(50),
             club varchar(100),
-            paid bool,
+            paid bool default 0,
             paymentmethod varchar(100),
             paymentid  varchar(50),
             partner varchar(100),
@@ -41,9 +41,9 @@ def insert():
             orderid varchar(50),
             natid varchar(50),
             competition varchar(200),
-            recipe bool,
-            attandence bool,
-            attest bool,
+            recipe bool default 0,
+            attandence bool defualt 0,
+            attest bool default 0,
             PRIMARY KEY(RegistrationID)
             )
             """
