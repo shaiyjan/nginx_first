@@ -182,13 +182,20 @@ def submit_tournament(
 
 @app.post("/changeBool")
 def change_bool(
-    fencer_id,
-    field_name,
-    bool_val):
+    registrationId,
+    fieldName,
+    boolVal):
+      boolInt = 1 if boolVal == "true" else 0
       with mysql.connect(**db_dict) as db:
         cursor = db.cursor()
         cursor.execute("""
         update registrations 
-            set """ + field_name + "=" +  bool_val + """
-        where FencerId = """ + fencer_id +";")  
+            set """ + fieldName + "=" +  boolVal + """
+        where registrationId = """ + registrationId +";") 
+        db.commit()
+        print("""
+        update registrations 
+            set """ + fieldName + "=" +  str(boolInt) + """
+        where registrationId = """ + registrationId +";"
+        )
         return {"ok": True}

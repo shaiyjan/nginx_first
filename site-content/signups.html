@@ -10,9 +10,6 @@
 </script>
 
 
-
-
-<article id="mainwindow">
     <h3 id=tourName>Failed to Fetch</h3>
     <table id="part_info">
         <tr>
@@ -43,12 +40,18 @@
 
 
 <script>
-    async function checkBoxChange(fencerId,fieldName,boolVal){
+    async function checkBoxChange(registration_Id,field_Name,bool_Val){
         const params = new URLSearchParams({
-            fencer_id : fencerId,
-            field_name: fieldName,
-            bool_cal: boolVal
+            registrationId : registration_Id,
+            fieldName: field_Name,
+            boolVal: bool_Val
         })
+        fetch(window.domain + "/changeBool?" + params.toString(), {
+        method: "POST"
+        })
+        .then(res => res.json())
+        .then(data => console.log(data))
+        .catch(err => console.error("Error:", err));
     }
 
     async function participants(url) {
@@ -99,21 +102,26 @@
             6: attendence,
             7: attest    
             */
+           console.log(value)
             tsf.textContent = value[1];
             tsl.textContent = value[2];
             tsc.textContent = value[3];
+            if (value[4]==1){paidcb.checked=true;};
+            if (value[5]==1){reccb.checked=true;}
+            if (value[6]==1){attendcb.checked=true;};
+            if (value[7]==1){attestcb.checked=true;};
 
             attendcb.addEventListener("change",function () {
-                checkBoxchange(value[0], attendence, checkbox.checked)
+                checkBoxChange(value[0], "attandence", attendcb.checked)
             });
             attestcb.addEventListener("change",function () {
-                checkBoxchange(value[0], attest, checkbox.checked)
+                checkBoxChange(value[0], "attest", attestcb.checked)
             });
             paidcb.addEventListener("change",function () {
-                checkBoxchange(value[0], paid, checkbox.checked)
+                checkBoxChange(value[0], "paid", paidcb.checked)
             });
             reccb.addEventListener("change",function () {
-                checkBoxchange(value[0], recipe, checkbox.checked)
+                checkBoxChange(value[0], "recipe", reccb.checked)
             });
 
             tdAttend.appendChild(attendcb);
