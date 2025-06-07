@@ -181,6 +181,37 @@ def submit_tournament(
     groups = [inner.strip(",").split(",") for inner in groups]
     print(groups)
 
+    with mysql.connect(**db_dict) as db:
+        cursor = db.cursor()
+        cursor.execute("""
+           INSERT INTO tournaments (
+                       name,
+                       group_size,
+                       group_count,
+                       tournament_mode,
+                       preliminaries
+                       ) VALUES 
+                    (%s,%s,%s,%s,%s);"""
+                    ,(tournament,int(gsize),int(gcount),tmode,int(precount)))
+        db.commit()
+        tournament_id = cursor.lastrowid
+        for count,group in enumerate(groups):
+            for fencer in group:
+                cursor.execute("""
+                                INSERT INTO tournament_groups (
+                                tournamentID,
+                                group_no,
+                                preliminaries,
+                                fencer_id
+                                ) VALUES
+                                (%s,%s,%s,%s) """,
+                                (int(tournament_id),
+                                 int(count),
+                                 int(precount),
+                                 int(fencer))
+                                )
+        db.commit()
+
     return {"ok": True}
 
 

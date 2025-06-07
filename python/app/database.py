@@ -150,30 +150,35 @@ def create_tournaments() -> dict:
         cursor =db.cursor()
         cursor.execute(
             """
-            select * from signuplists;
-            """
-        )
-        tournaments =cursor.fetchall()
-        ret_dict = dict()
-        for tournament in tournaments:
-            ret_dict[tournament[0]]=tournament[1]
-        
-
-        cursor.execute(
-            """
             create table if not exists tournaments(
             TournamentId int NOT NULL AUTO_INCREMENT,
             name varchar(200) NOT NULL,
             group_size int NOT NULL,
             group_count int NOT NULL,
-            tournament_mode varchar(200) NOT NULL,
+            tournament_mode varchar(20) NOT NULL,
             preliminaries int NOT NULL,
-            started bool NOT NULL default false,
+            started bool NOT NULL DEFAULT 0,
             PRIMARY KEY (TournamentID)
             )
             """
         )
+        cursor.execute(
+            """
+            CREATE TABLE IF NOT EXISTS tournament_groups (
+                GroupId INT NOT NULL AUTO_INCREMENT,
+                TournamentId INT NOT NULL,
+                group_no INT NOT NULL,
+                preliminaries INT NOT NULL,
+                fencer_ID INT NOT NULL,
+                PRIMARY KEY (GroupId),
+                FOREIGN KEY (TournamentId) REFERENCES tournaments(TournamentId) ON DELETE CASCADE
+            );
+            """
+        )
+        db.commit()
 
-print(participants)
-insert()
-#create_tournaments()
+
+
+
+#insert()
+create_tournaments()
