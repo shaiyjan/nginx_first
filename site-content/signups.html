@@ -17,9 +17,6 @@
             <th>Firstname</th>
             <th>Club</th>
             <th>Attendant</th>
-            <th>Attestation</th>
-            <th>Paid</th>
-            <th>Recipe</th>
         </tr>
     </table>
 </article>
@@ -40,13 +37,13 @@
 
 
 <script>
-    async function checkBoxChange(registration_Id,field_Name,bool_Val){
+    async function checkBoxChange(ID,bool_Val){
         const params = new URLSearchParams({
-            registrationId : registration_Id,
-            fieldName: field_Name,
+            fencerID : ID,
+            signupID: window.tourID,
             boolVal: bool_Val
         })
-        fetch(window.domain + "/changeBool?" + params.toString(), {
+        fetch(window.domain + "/updateAttendance?" + params.toString(), {
         method: "POST"
         })
         .then(res => res.json())
@@ -67,29 +64,14 @@
             const tsl = document.createElement("td");
             const tsc = document.createElement("td");
             const attendcb = document.createElement("input");
-            const attestcb = document.createElement("input");
-            const paidcb = document.createElement("input");
-            const reccb = document.createElement("input");
             
             const tdAttend = document.createElement("td");
-            const tdAttest = document.createElement("td");
-            const tdPaid = document.createElement("td");
-            const tdRec = document.createElement("td");
 
             tdAttend.style.textAlign = "center";
             tdAttend.style.verticalAlign = "middle";
-            tdAttest.style.textAlign = "center";
-            tdAttest.style.verticalAlign = "middle";
-            tdPaid.style.textAlign = "center";
-            tdPaid.style.verticalAlign = "middle";
-            tdRec.style.textAlign = "center";
-            tdRec.style.verticalAlign = "middle";
             
 
             attendcb.type = "checkbox";
-            attestcb.type = "checkbox";
-            paidcb.type = "checkbox";
-            reccb.type = "checkbox";
 
             /*
             response ->
@@ -97,44 +79,23 @@
             1: Lastname,
             2: Firstname,
             3: Club,
-            4: paid,
-            5: recipe,
-            6: attendence,
-            7: attest    
+            4: attendence,
             */
             tsf.textContent = value[1];
             tsl.textContent = value[2];
             tsc.textContent = value[3];
-            if (value[4]==1){paidcb.checked=true;};
-            if (value[5]==1){reccb.checked=true;}
-            if (value[6]==1){attendcb.checked=true;};
-            if (value[7]==1){attestcb.checked=true;};
+            if (value[4]==1){attendcb.checked=true;};
 
             attendcb.addEventListener("change",function () {
-                checkBoxChange(value[0], "attandence", attendcb.checked)
-            });
-            attestcb.addEventListener("change",function () {
-                checkBoxChange(value[0], "attest", attestcb.checked)
-            });
-            paidcb.addEventListener("change",function () {
-                checkBoxChange(value[0], "paid", paidcb.checked)
-            });
-            reccb.addEventListener("change",function () {
-                checkBoxChange(value[0], "recipe", reccb.checked)
+                checkBoxChange(value[0], attendcb.checked)
             });
 
             tdAttend.appendChild(attendcb);
-            tdAttest.appendChild(attestcb);
-            tdPaid.appendChild(paidcb);
-            tdRec.appendChild(reccb);
 
             tr.appendChild(tsf);
             tr.appendChild(tsl);
             tr.appendChild(tsc);
             tr.appendChild(tdAttend);
-            tr.appendChild(tdAttest);
-            tr.appendChild(tdPaid);
-            tr.appendChild(tdRec);
             table.appendChild(tr);
 
         }

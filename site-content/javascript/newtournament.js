@@ -105,8 +105,8 @@ async function updateTotal() {
 fetch elements from the signup list with number of registrations.
 Then extend the table by a row for each signuplist.
 */
-async function signuplists(url) {
-    const response = await fetch(url);
+async function signuplists() {
+    const response = await fetch(window.domain + '/signup_extra');
     if (!response.ok) {
         console.log("failed to fetch from " & url);
     }
@@ -132,7 +132,6 @@ async function signuplists(url) {
             const list = document.getElementById("tour_list");
             list.appendChild(li)
     }
-
 }
 
 async function loadGroupSetup(url=window.domain + "/signup_overlap_particpants/" + window.sessionStorage.liststr) {
@@ -167,22 +166,27 @@ async function loadGroupSetup(url=window.domain + "/signup_overlap_particpants/"
 
     /*
     Add drag elements to unassigned participants;
+    fencer_data:
+    0: fencer_id
+    1: Lastname
+    2: firstname
+    3: club
     */
+   
    for (const [key,fencer_data] of Object.entries(data)) {
         let drag_ele = document.createElement("div");
-        drag_ele.id= "dragfencer_"+ fencer_data[2];
+        drag_ele.id= "dragfencer_"+ fencer_data[0];
         drag_ele.className = "drag_fencer";
         drag_ele.draggable =true;
-        drag_ele.setAttribute("FencerId",fencer_data[2]);
+        drag_ele.setAttribute("FencerId",fencer_data[0]);
         drag_ele.addEventListener("dragstart", function (e) {
             e.dataTransfer.setData("text/plain", drag_ele.id);
         });
-
         let drag_ele_inner = document.createElement("p");
         drag_ele_inner.style="margin: 0px";
         drag_ele_inner.textContent=
-                fencer_data[0] + "\n " +
-                fencer_data[1] + "\n" + 
+                fencer_data[1] + "\n " +
+                fencer_data[2] + "\n" + 
                 fencer_data[3]
                 ;
         drag_ele.appendChild(drag_ele_inner);

@@ -64,17 +64,14 @@ def read_participants(list_id : int) -> dict:
         cursor.execute(
             """
             select 
-                r.registrationID,
-                r.lastname,
-                r.firstname,
-                r.club,
-                r.paid,
-                r.recipe,
-                r.attandence,
-                r.attest
-            from registrations as r
-            left join signuplists as s on s.name = r.competition
-            where s.tournamentid =
+                f.FencerID,
+                f.lastname,
+                f.firstname,
+                f.club,
+                s.attendance
+            from fencers as f
+            left join signups as s on s.fencerId = f.fencerID
+            where s.signuplistID =
             """  + str(list_id) + ";"
                        )
         ret = cursor.fetchall()
@@ -90,20 +87,20 @@ def read_signuplist_extend() -> dict:
         cursor = db.cursor()
         cursor.execute(
             """
-            select 
-                s.TournamentID,
-                f.*,
-                s.in_tournament
-                from signuplists as s
-                left join (
+            with total as(
                 select 
-                    r.competition,
-                    COUNT(DISTINCT CASE WHEN r.Attandence THEN r.FencerId ELSE NULL END)
-                from registrations as r 
-                group by r.competition
-                ) as f  on s.name = f.competition
-            """
-        )
+                    COUNT(distinct case when s.attendance = 1 then s.fencerID else NULL end) as sum,
+                    s.signuplistID
+                from signups as s
+                where attendance = 1 
+                group by signuplistID)
+            select 
+                s.signuplistID,
+                s.name,
+                coalesce(t.sum,0)
+            from signuplists as s
+            left join total as t on t.signuplistID = s.signuplistid;"""
+            )
         ret_dict = dict(enumerate(cursor.fetchall()))
         return ret_dict
     
@@ -118,13 +115,11 @@ def read_total_participants(item_strlist : str) -> dict:
         cursor.execute(
             """
             select 
-                count(distinct r.fencerID)
-            from registrations as r 
-            left join signuplists as s on s.name = r.competition
-            where s.TournamentID in (
-            """+ ",".join([str(ind) for ind in item_list]) +""")
-            and r.attandence = 1"""
-        )
+                count(distinct fencerID)
+            from signups 
+            where signuplistID in (""" + ",".join(item_list) + ")"
+            " and attendance = 1;"
+            )
         return {"0":cursor.fetchall()[0][0]}
     
 @app.get("/signup_overlap_particpants/{item_strlist}")
@@ -135,37 +130,26 @@ def read_total_participants_per_signup(item_strlist : str) -> dict:
         cursor = db.cursor()
         cursor.execute(
             """
-            with total as (
-                select 
-                    r.firstname,
-                    r.lastname,
-                    r.Fencerid,
-                    r.club,
-                    s.TournamentID,
-                    r.attandence
-                from registrations as r
-                left join signuplists as s on s.name = r.competition and 
-                s.TournamentID in ("""
-                + ",".join([str(ind) for ind in item_list]) + """)),
-                min_tournament as (
-                select 
-                    FencerID,
-                    min(tournamentId) as min_tID
-                from total group by FencerId
+            with total as(
+                select
+                    distinct(s.fencerID)
+                from signups as s
+                where attendance = 1 and
+                s.signuplistID in (""" + ",".join(item_list) + """)
                 )
             select 
-                total.*
-            from min_tournament as mt
-            left join total
-                on total.FencerID = mt.FencerId 
-                and total.tournamentID = mt.min_tID
-            where total.attandence = 1
-            """
+                f.fencerid,
+                f.lastname,
+                f.firstname,
+                f.club
+            from total as t 
+            left join fencers as f on t.fencerId = f.fencerid;"""
             )
         ret_dict = dict(enumerate(cursor.fetchall()))
         print(ret_dict)
         return ret_dict
-    
+
+
 @app.post("/submitTournament")
 def submit_tournament(
     tournament: str,
@@ -175,11 +159,8 @@ def submit_tournament(
     precount: int,
     grp: str):
 
-    print(grp)
     groups = grp.split("#")[1:]
-    print(groups)
     groups = [inner.strip(",").split(",") for inner in groups]
-    print(groups)
 
     with mysql.connect(**db_dict) as db:
         cursor = db.cursor()
@@ -202,7 +183,7 @@ def submit_tournament(
                                 tournamentID,
                                 group_no,
                                 preliminaries,
-                                fencer_id
+                                fencerID
                                 ) VALUES
                                 (%s,%s,%s,%s) """,
                                 (int(tournament_id),
@@ -215,22 +196,19 @@ def submit_tournament(
     return {"ok": True}
 
 
-@app.post("/changeBool")
+@app.post("/updateAttendance")
 def change_bool(
-    registrationId,
-    fieldName,
+    fencerID,
+    signupID,
     boolVal):
       boolInt = 1 if boolVal == "true" else 0
       with mysql.connect(**db_dict) as db:
         cursor = db.cursor()
         cursor.execute("""
-        update registrations 
-            set """ + fieldName + "=" +  boolVal + """
-        where registrationId = """ + registrationId +";") 
+        update signups        
+        set attendance = %s
+        where fencerid = %s and signuplistID = %s
+        """,
+        (boolInt,int(fencerID),int(signupID)))
         db.commit()
-        print("""
-        update registrations 
-            set """ + fieldName + "=" +  str(boolInt) + """
-        where registrationId = """ + registrationId +";"
-        )
         return {"ok": True}
