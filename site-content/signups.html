@@ -19,7 +19,7 @@
             <th>Attendant</th>
         </tr>
     </table>
-</article>
+
 
 <script>
     async function registration_name(url){
@@ -31,7 +31,7 @@
         const header = document.getElementById("tourName");
         header.textContent = data[window.tourID];
     }
-    registration_name(window.domain + '/registrations');
+    registration_name(window.domain + '/signups/signuplists');
 
 </script>
 
@@ -43,7 +43,7 @@
             signupID: window.tourID,
             boolVal: bool_Val
         })
-        fetch(window.domain + "/updateAttendance?" + params.toString(), {
+        fetch(window.domain + "/participants/updateAttendance?" + params.toString(), {
         method: "POST"
         })
         .then(res => res.json())
@@ -100,7 +100,7 @@
 
         }
     }
-    participants(window.domain + '/signuplist/' + window.tourID)
+    participants(window.domain + '/signups/signuplist/' + window.tourID)
 </script>
 
 <!--# include virtual="template/footer.html" -->

@@ -81,7 +81,7 @@ async function updateTotal() {
         window.sessionStorage.ptotal = 0;
     }
     else {
-        const response = await fetch(window.domain + "/signup_overlap/" + window.sessionStorage.liststr)
+        const response = await fetch(window.domain + "/signups/signup_overlap/" + window.sessionStorage.liststr)
         if (!response.ok){
             console.log("Signup total failed from: " + url)
         }
@@ -106,7 +106,7 @@ fetch elements from the signup list with number of registrations.
 Then extend the table by a row for each signuplist.
 */
 async function signuplists() {
-    const response = await fetch(window.domain + '/signup_extra');
+    const response = await fetch(window.domain + '/signups/signup_attendance');
     if (!response.ok) {
         console.log("failed to fetch from " & url);
     }
@@ -134,7 +134,14 @@ async function signuplists() {
     }
 }
 
-async function loadGroupSetup(url=window.domain + "/signup_overlap_particpants/" + window.sessionStorage.liststr) {
+async function loadGroupSetup(url=window.domain + "/signups/signup_overlap_particpants/" + window.sessionStorage.liststr) {
+    /*
+    Fetch participants for all selected signup lists,
+    then create dragable fields for all participants.
+    The number of elements per group is delimited by the group size variable.
+
+    */
+    
     let gframe = document.getElementById("groups_frame")
     gframe.innerHTML="";
 
@@ -173,6 +180,9 @@ async function loadGroupSetup(url=window.domain + "/signup_overlap_particpants/"
     3: club
     */
    
+    /*
+    Create the respective elements and make them dragable.
+    */
    for (const [key,fencer_data] of Object.entries(data)) {
         let drag_ele = document.createElement("div");
         drag_ele.id= "dragfencer_"+ fencer_data[0];
@@ -218,7 +228,10 @@ async function loadGroupSetup(url=window.domain + "/signup_overlap_particpants/"
         part_drop_zone.addEventListener("drop", function (e) {
             e.preventDefault();
             
-            // Only allow drop if the drop zone is empty
+            /* 
+            Only allow drop if the group does contain fewer the
+            gsize elements. Elsewise the elements swap position.
+            */
             if (part_drop_zone.children.length === parseInt(window.sessionStorage.gsize)) {
                 const id = e.dataTransfer.getData("text/plain");
                 let draggedElement = document.getElementById(id);
@@ -238,6 +251,9 @@ async function loadGroupSetup(url=window.domain + "/signup_overlap_particpants/"
 }
 
 async function sendData() {
+    /*
+
+    */
     const uncont = document.getElementById("unassigned_inner")
 
     if (uncont.childElementCount > 0){
@@ -258,15 +274,15 @@ async function sendData() {
         console.log(groups)
 
         const params = new URLSearchParams({
-        tournament: window.sessionStorage.tname,
-        gsize: window.sessionStorage.gsize,
-        gcount: window.sessionStorage.gcount,
-        tmode: window.sessionStorage.tmode,
-        precount: window.sessionStorage.precount,
-        grp: groups
+        "tournament": window.sessionStorage.tname,
+        "gsize": window.sessionStorage.gsize,
+        "gcount": window.sessionStorage.gcount,
+        "tmode": window.sessionStorage.tmode,
+        "precount": window.sessionStorage.precount,
+        "grp": groups
         });
 
-        fetch(window.domain + "/submitTournament?" + params.toString(), {
+        fetch(window.domain + "/tournaments/submitTournament?" + params.toString(), {
         method: "POST"
         })
         .then(res => res.json())
