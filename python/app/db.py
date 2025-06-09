@@ -46,38 +46,16 @@ def test():
 
 
 
-
-def fetchFencers():
-    with mysql.connect(**db_dict) as db:
-        cursor = db.cursor()
-        cursor.execute("""
-            select 
-                *
-            from fencers            
+with mysql.connect(**db_dict) as db:
+    cursor = db.cursor()
+    cursor.execute("""
+        select 
+            tournamentId,
+            name           
+        from tournaments;        
         """)
-        fencers = cursor.fetchall()
-
-        cursor.execute("""
-            select column_name 
-            from information_schema.columns 
-            where table_schema='db' 
-                and table_name = 'fencers'
-            order by ordinal_position;
-            """)
-
-        headers = cursor.fetchall()
-        headers = [header[0] for header in headers]
-
-        print(headers)
-
-        fencer_dicts=dict()
-        for count,fencer in enumerate(fencers):
-            fencer_dict=dict(zip(headers,fencer))
-            fencer_dict.pop("dateofbirth")
-            fencer_dict.pop("region")
-            fencer_dicts[count]=fencer_dict
-            print(fencer_dict)
-
-        return fencer_dicts
-    
-fetchFencers()
+    tournaments=cursor.fetchall()
+    ret_dict = dict()
+    for tournament in tournaments:
+        ret_dict[tournament[0]]=tournament[1]
+    print(ret_dict)

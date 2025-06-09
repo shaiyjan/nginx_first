@@ -1,13 +1,4 @@
 import mysql.connector as mysql
-import csv
-
-
-from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
-
-from .apicalls import participants,signups,tournaments
-
-
 db_dict = {
     "host"      : "172.16.103.13",
     "database"  : "db",
@@ -16,32 +7,26 @@ db_dict = {
     "port"      : "3306"
 }
 
-app = FastAPI()
 
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=['*']
+from fastapi import APIRouter
+
+router = APIRouter(
+    prefix="/participants",
+    tags=["participants"]
 )
+   
 
-app.include_router(participants.router)
-app.include_router(signups.router)
-app.include_router(tournaments.router)
-
-    
-
-    
-
-
-
-
-
-@app.post("/updateAttendance")
+@router.post("/updateAttendance")
 def change_bool(
     fencerID,
     signupID,
     boolVal):
-      boolInt = 1 if boolVal == "true" else 0
-      with mysql.connect(**db_dict) as db:
+    """
+    Updates to Attendance column in the table fencers of 
+    the respective fencer in the respective signuplist to boolval.
+    """
+    boolInt = 1 if boolVal == "true" else 0
+    with mysql.connect(**db_dict) as db:
         cursor = db.cursor()
         cursor.execute("""
         update signups        
@@ -51,8 +36,8 @@ def change_bool(
         (boolInt,int(fencerID),int(signupID)))
         db.commit()
         return {"ok": True}
-
-@app.get("/fetchFencers")
+    
+@router.get("/fetchFencers")
 def fetchFencers():
     with mysql.connect(**db_dict) as db:
         cursor = db.cursor()
@@ -83,9 +68,7 @@ def fetchFencers():
 
         return fencer_dicts
     
-
-
-@app.post("/updateFencer")
+@router.post("/updateFencer")
 def update_Fencer(id,column,value):
     if column in ("paid","attest"):
         value=int(value)
@@ -109,22 +92,3 @@ def update_Fencer(id,column,value):
         )
         db.commit()
     return{"ok" : True}
-
-@app.get("/fetchTournaments")
-def fetch_Tournaments():
-    with mysql.connect(**db_dict) as db:
-        cursor = db.cursor()
-        cursor.execute("""
-            select 
-                tournamentId,
-                name           
-            from tournaments;        
-            """)
-        tournaments=cursor.fetchall()
-        if tournaments.__len__==0:
-            return {"1":"Empty"}
-        else:
-            ret_dict = dict()
-            for tournament in tournaments:
-                ret_dict[tournament[0]]=tournament[1]
-            return ret_dict
