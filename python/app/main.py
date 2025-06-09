@@ -212,3 +212,61 @@ def change_bool(
         (boolInt,int(fencerID),int(signupID)))
         db.commit()
         return {"ok": True}
+
+@app.get("/fetchFencers")
+def fetchFencers():
+    with mysql.connect(**db_dict) as db:
+        cursor = db.cursor()
+        cursor.execute("""
+            select 
+                *
+            from fencers            
+        """)
+        fencers = cursor.fetchall()
+
+        cursor.execute("""
+            select column_name 
+            from information_schema.columns 
+            where table_schema='db' 
+                and table_name = 'fencers'
+            order by ordinal_position;
+            """)
+
+        headers = cursor.fetchall()
+        headers = [header[0] for header in headers]
+
+        fencer_dicts=dict()
+        for count,fencer in enumerate(fencers):
+            fencer_dict=dict(zip(headers,fencer))
+            fencer_dict.pop("dateofbirth")
+            fencer_dict.pop("region")
+            fencer_dicts[count]=fencer_dict
+
+        return fencer_dicts
+    
+
+
+@app.post("/updateFencer")
+def update_Fencer(id,column,value):
+    if column in ("paid","attest"):
+        value=int(value)
+    data_dict= {"id":int(id),
+                "column":column,
+                "value":value}
+    print(data_dict)
+    if column in ("paid","attest","note"):
+        update_string= """
+            update fencers 
+                set """ + column + """ = %(value)s
+            where fencerID = %(id)s;
+            """
+    else:
+        return {"ok" : False}
+    with mysql.connect(**db_dict) as db:
+        cursor = db.cursor()
+        cursor.execute(
+            update_string,
+            data_dict
+        )
+        db.commit()
+    return{"ok" : True}

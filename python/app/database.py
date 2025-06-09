@@ -1,5 +1,6 @@
 import mysql.connector as mysql
 import csv
+from datetime import date
 
 db_dict = {
 #    "host"      : "172.16.103.13",
@@ -176,6 +177,7 @@ def create_tournaments() -> dict:
 
 
 def setup_db():
+    # Setup all tables in the database.
     try:
         mydb =mysql.connect(**db_dict)
         cursor=mydb.cursor()
@@ -209,7 +211,7 @@ def setup_db():
         cursor.execute(
             """
             create table if not exists fencers(
-                FencerID int NOT NULL AUTO_INCREMENT,
+                fencerID int NOT NULL AUTO_INCREMENT,
                 lastname varchar(100) NOT NULL,
                 firstname varchar(100) NOT NULL,
                 dateofbirth varchar(10) NOT NULL,
@@ -219,7 +221,8 @@ def setup_db():
                 club varchar(100),
                 paid bool default 0,
                 attest bool default 0,
-                note varchar(2000),
+                adult bool default 0,
+                note varchar(2000) default '',
                 PRIMARY KEY(FencerID)
             )
             """
@@ -261,7 +264,17 @@ def insert():
         for row in reader:
             row = row
             temp_dict= dict(zip(header,row))
-            key = tuple(row[1:8])
+            day,month,year=temp_dict["dateofbirth"].split(".")
+            birthdate = date(int(year),int(month),int(day))
+            today = date.today()
+            age = today.year - birthdate.year - ((today.month, today.day) < (birthdate.month, birthdate.day))
+
+            if age >= 18:
+                adult=1
+            else:
+                adult=0
+
+            key = tuple([*row[1:8],adult])
             if key not in fencer_dict.keys():
                 fencer_dict[key] = [temp_dict["competition"].strip()]
             else:
@@ -288,8 +301,9 @@ def insert():
                            gender,
                            nation,
                            region,
-                           club
-                           ) values(%s,%s,%s,%s,%s,%s,%s)
+                           club,
+                           adult
+                           ) values(%s,%s,%s,%s,%s,%s,%s,%s)
                            """,
                            tuple(key))
             fencer_id[key]=cursor.lastrowid

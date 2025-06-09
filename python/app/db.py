@@ -1,5 +1,5 @@
 import mysql.connector as mysql
-import csv
+from datetime import date
 
 db_dict = {
 #    "host"      : "172.16.103.13",
@@ -11,58 +11,73 @@ db_dict = {
 }
 
 
-def read_total_participants_per_signup(item_strlist : str) -> dict:
-    if item_strlist== "": return {"0":0}
+def test():
+    fencer_dicts =[]
     with mysql.connect(**db_dict) as db:
-        item_list= item_strlist.split("%")[0:-1]
         cursor = db.cursor()
-        cursor.execute(
-            """
-            with total as (
-                select 
-                    r.firstname,
-                    r.lastname,
-                    r.Fencerid,
-                    r.club,
-                    s.TournamentID
-                from registrations as r 
-                left join signuplists as s on s.name = r.competition
-                where s.TournamentID in ("""
-                + ",".join([str(ind) for ind in item_list]) + """)
-                ),
-                min_tournament as (
-                select 
-                    FencerID,
-                    min(tournamentId) as min_tID
-                from total group by FencerId
-                )
+        cursor.execute("""
             select 
-                total.*
-            from min_tournament as mt
-            left join total
-                on total.FencerID = mt.FencerId 
-                and total.tournamentID = mt.min_tID
-            """
-            )
+                *
+            from fencers            
+        """)
+        fencer_data = cursor.fetchall()
 
-        return dict(enumerate(cursor.fetchall()))
+        cursor.execute("""
+            select column_name 
+            from information_schema.columns 
+            where table_schema='db' 
+                and table_name = 'fencers';
+            """)
 
-fencer_dict = dict()
-signup_dict = dict()
+        headers = cursor.fetchall()
+        headers= [el[0] for el in headers]
 
-with open("participants.csv") as csvfile:
-    reader = csv.reader(csvfile,delimiter=";")
-    header=next(reader)
-    for row in reader:
-        row = row
-        temp_dict= dict(zip(header,row))
-        key = tuple(row[1:8])
-        if key not in fencer_dict.keys():
-            fencer_dict[key] = [temp_dict["competition"].strip()]
-        else:
-            fencer_dict[key]=[*fencer_dict[key],temp_dict["competition"].strip()]
+        for fencer in fencer_data:
+            fencer_dict=dict(zip(headers,fencer))
+            day,month,year=fencer_dict["dateofbirth"].split(".")
+            birthdate = date(year,month,day)
+            today = date.today()
+            age = today.year - birthdate.year - ((today.month, today.day) < (birthdate.month, birthdate.day))
+        
+            if age >= 18:
+                fencer_dict["adult"]=1
+            else:
+                fencer_dict["adult"]=0
 
-        signup_dict[temp_dict["competition"]] = 1
 
-for key in fencer_dict.keys():
-    print(key,fencer_dict[key],sep="\n",end="\n")
+
+
+def fetchFencers():
+    with mysql.connect(**db_dict) as db:
+        cursor = db.cursor()
+        cursor.execute("""
+            select 
+                *
+            from fencers            
+        """)
+        fencers = cursor.fetchall()
+
+        cursor.execute("""
+            select column_name 
+            from information_schema.columns 
+            where table_schema='db' 
+                and table_name = 'fencers'
+            order by ordinal_position;
+            """)
+
+        headers = cursor.fetchall()
+        headers = [header[0] for header in headers]
+
+        print(headers)
+
+        fencer_dicts=dict()
+        for count,fencer in enumerate(fencers):
+            fencer_dict=dict(zip(headers,fencer))
+            fencer_dict.pop("dateofbirth")
+            fencer_dict.pop("region")
+            fencer_dicts[count]=fencer_dict
+            print(fencer_dict)
+
+        return fencer_dicts
+    
+fetchFencers()
