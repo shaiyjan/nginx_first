@@ -122,5 +122,4 @@ def read_total_participants_per_signup(item_strlist : str) -> dict:
             left join fencers as f on t.fencerId = f.fencerid;"""
             )
         ret_dict = dict(enumerate(cursor.fetchall()))
-        print(ret_dict)
         return ret_dict

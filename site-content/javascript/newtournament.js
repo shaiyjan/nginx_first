@@ -1,25 +1,22 @@
-
 window.onload = function() {
+    if (window.sessionStorage.tname) {
+        document.getElementById('tournament_name').value = window.sessionStorage.tname;
+    }
 
-if (window.sessionStorage.tname) {
-    document.getElementById('tournament_name').value = window.sessionStorage.tname;
-}
+    if (window.sessionStorage.tmode) {
+        document.getElementById('mode_select').value = window.sessionStorage.tmode;
+    }
+    else {
+        document.getElementById('mode_select').value="ko";
+        window.sessionStorage.tmode="ko";
+    }
 
-if (window.sessionStorage.tmode) {
-    document.getElementById('mode_select').value = window.sessionStorage.tmode;
-}
-else {
-    document.getElementById('mode_select').value="ko";
-    window.sessionStorage.tmode="ko";
-}
-
-if (window.sessionStorage.precount) {
-    document.getElementById('pre_select').value = window.sessionStorage.precount;
-}
-else {
-        window.sessionStorage.precount = 1
-}
-
+    if (window.sessionStorage.precount) {
+        document.getElementById('pre_select').value = window.sessionStorage.precount;
+    }
+    else {
+            window.sessionStorage.precount = 1
+    }
 }
 
 
@@ -252,7 +249,7 @@ async function loadGroupSetup(url=window.domain + "/signups/signup_overlap_parti
 
 async function sendData() {
     /*
-
+    submits the collected data to the backend server
     */
     const uncont = document.getElementById("unassigned_inner")
 
@@ -271,7 +268,6 @@ async function sendData() {
             }
             groups.push(group)
         }
-        console.log(groups)
 
         const params = new URLSearchParams({
         "tournament": window.sessionStorage.tname,
@@ -289,4 +285,36 @@ async function sendData() {
         .then(data => console.log(data))
         .catch(err => console.error("Error:", err));
     }
+}
+
+async function continue_helper() {
+    if (window.sessionStorage.tmode == "rr") {
+        if (window.sessionStorage.tname &&
+            window.sessionStorage.liststr != ""
+        ){
+            const response = confirm(
+                "Do you want to submit the following tournament? \n Name: " 
+                + window.sessionStorage.tname + "\n Tournament Mode: Round-Robin"
+            )
+            if (response) {
+                const params = new URLSearchParams({
+                "tournament": window.sessionStorage.tname,
+                "gsize": window.sessionStorage.ptotal,
+                "gcount": 1,
+                "tmode": "rr",
+                "precount": 0,
+                "grp": window.sessionStorage.liststr
+                });
+
+                fetch(window.domain + "/tournaments/submitTournament?" + params.toString(), {
+                method: "POST"
+                })
+                .then(res => res.json())
+                .then(data => console.log(data))
+                .catch(err => console.error("Error:", err));
+            }
+        }
+    }
+    else{loadGroupSetup()}
+
 }

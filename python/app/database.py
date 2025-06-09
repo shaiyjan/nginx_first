@@ -92,13 +92,15 @@ def setup_db():
             create table if not exists matches(
                 matchID int NOT NULL AUTO_INCREMENT,
                 tournamentID int NOT NULL,
+                type varchar(100) NOT NULL,
                 fencerAID int NOT NULL,
                 fencerBID int,
                 pointsA int,
                 pointsB int,
                 winner int,
                 note varchar(200),
-                PRIMARY KEY(matchID)
+                PRIMARY KEY(matchID),
+                FOREIGN KEY (tournamentID) REFERENCES tournaments(tournamentID) ON DELETE CASCADE
             );"""
         )
 
