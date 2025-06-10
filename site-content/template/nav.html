@@ -29,6 +29,13 @@
                     li.appendChild(ref) ;
                     list.appendChild(li);
                 }
+                const create = document.createElement("a");
+                create.href= "/newtournament.html";
+                create.textContent= "Create new tournament";
+                list.appendChild(document.createElement("li"))
+                list.lastChild.appendChild(create);
+                
+
             }
 
             fetchTournaments(window.domain + '/tournaments/fetchTournaments');

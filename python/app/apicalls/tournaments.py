@@ -102,7 +102,7 @@ def create_ko_tournament(data):
                     if fencer == fencerB: continue
                     match_dict={
                     "tournamentID" : tournament_id,
-                    "type" : "preliminaries",
+                    "type" : "roundrobin",
                     "idA" : fencer,
                     "idB" : fencerB
                     }

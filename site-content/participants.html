@@ -16,6 +16,7 @@
         <th>Paid</th>
         <th>Attest</th>
         <th>Note</th>
+        <th>Assign to Tournament</th>
     </tr>
 </table>
 
@@ -68,6 +69,7 @@
             const tdPaid = document.createElement("td");
             const tdAttest = document.createElement("td");
             const tdNote = document.createElement("td");
+            const tdAssign = document.createElement("td");
 
             table.appendChild(tr);
 
@@ -79,6 +81,7 @@
             tr.appendChild(tdPaid);
             tr.appendChild(tdAttest);
             tr.appendChild(tdNote);
+            tr.appendChild(tdAssign);
 
             tdLast.textContent = fencer_data["lastname"];
             tdFirst.textContent = fencer_data["firstname"];
@@ -148,6 +151,18 @@
                     )                           
                 }
             )
+
+            tdAssign.appendChild(document.createElement("button"));
+            tdAssign.style.textAlign = "center";
+            tdAssign.style.verticalAlign = "middle";
+            tdAssign.lastChild.textContent = "Signup to tournament";
+            tdAssign.lastChild.addEventListener("clicked", function(){
+                /* Open new window with signups where on can 
+                (un)assign by checkbox. 
+                */
+            })
+
+
 
         }
 

@@ -92,3 +92,24 @@ def update_Fencer(id,column,value):
         )
         db.commit()
     return{"ok" : True}
+
+@router.get("/unassignedSignups/{fencerID})")
+def fetch_unassigned_Signups(fencerID: str):
+    with mysql.connect(**db_dict) as db:
+        cursor = db.cursor()
+        cursor.execute("""
+            with fencer_signups as (
+            select
+                *
+            from signups where fencerid = %s
+            )
+            select 
+                s.signuplistID, 
+                s.name
+            from signuplists as s
+            left join fencer_signups as su on s.signuplistID = su.signuplistID
+            where su.fencerId is NULL;"""
+            , (int(fencerID),)
+            )
+        ret_list = [el[0] for el in cursor.fetchall()]
+        return {"unsassigned":ret_list}
