@@ -113,3 +113,46 @@ def fetch_unassigned_Signups(fencerID: str):
             )
         ret_list = [el[0] for el in cursor.fetchall()]
         return {"unsassigned":ret_list}
+    
+@router.get("/participant/{fencerID}")
+def fetch_participant(fencerID: str):
+    with mysql.connect(**db_dict) as db:
+        cursor = db.cursor()
+        cursor.execute("""
+            with assignments as (
+                select 
+                    *
+                from signups where fencerID = %s)
+                select 
+                    su.signuplistID,
+                    su.name,
+                    case 
+                        when a.fencerID IS NULL then 0
+                        else 1
+                    end as assignd
+                from signuplists as su
+                left join assignments as a on a.signuplistID = su.signuplistID       
+            """,(int(fencerID),))
+        participation = cursor.fetchall()
+
+        cursor.execute(
+            """
+            select * from fencers where fencerID = %s
+            """, (int(fencerID),)
+        )
+        fencer_data = cursor.fetchone()
+        cursor.execute("""
+            select column_name 
+            from information_schema.columns 
+            where table_schema='db' 
+                and table_name = 'fencers'
+            order by ordinal_position;
+            """)
+        header=cursor.fetchone()
+        header=[el[0] for el in cursor.fetchall()]
+        fencer_dict = dict(zip(header,fencer_data))
+        fencer_dict["participation"]= participation
+
+        return fencer_dict
+
+        

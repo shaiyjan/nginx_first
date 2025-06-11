@@ -156,10 +156,12 @@
             tdAssign.style.textAlign = "center";
             tdAssign.style.verticalAlign = "middle";
             tdAssign.lastChild.textContent = "Signup to tournament";
-            tdAssign.lastChild.addEventListener("clicked", function(){
-                /* Open new window with signups where on can 
-                (un)assign by checkbox. 
-                */
+            tdAssign.lastChild.addEventListener("click", function(){
+                  window.open(
+                    "/participant/" + fencer_data["fencerID"],              // URL
+                    "popupWindow",                      // Window name
+                    "width=600,height=400,top=200,left=300" // Features
+                    );
             })
 
 
