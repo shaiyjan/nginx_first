@@ -7,7 +7,7 @@ db_dict = {
     "port"      : "3306"
 }
 
-
+from datetime import date
 from fastapi import APIRouter
 
 router = APIRouter(
@@ -155,3 +155,115 @@ def fetch_participant(fencerID: str):
         return fencer_dict
 
         
+@router.post("/update")
+def updateParticipant(
+    participantID: str,
+    lastname: str,
+    firstname: str,
+    club: str,
+    dateofbirth: str,
+    gender: str,
+    nation: str,
+    paid: str,
+    note: str):
+
+    data_dict= {
+    "participantID": int(participantID),
+    "lastname": lastname,
+    "firstname": firstname,
+    "club": club,
+    "dateofbirth": dateofbirth,
+    "gender": gender,
+    "nation": nation,
+    "paid": int(paid),
+    "note": note 
+    }
+    day,month,year=data_dict["dateofbirth"].split(".")
+    birthdate = date(int(year),int(month),int(day))
+    today = date.today()
+    age = today.year - birthdate.year - ((today.month, today.day) < (birthdate.month, birthdate.day))
+
+    if age >= 18:
+        data_dict["adult"]=1
+    else:
+        data_dict["adult"]=0
+
+    with mysql.connect(**db_dict) as db:
+        cursor = db.cursor()
+        cursor.execute("""
+        update fencers set
+            lastname = %(lastname)s,
+            firstname = %(firstname)s,
+            club = %(club)s,
+            dateofbirth = %(dateofbirth)s,
+            gender = %(gender)s,
+            nation = %(nation)s,
+            paid = %(paid)s,
+            adult = %(adult)s,
+            note = %(note)s
+        where fencerID = %(participantID)s;
+        """,data_dict)
+        db.commit()
+    return {"ok" : True}
+
+
+@router.post("/insert")
+def updateParticipant(
+    participantID: str,
+    lastname: str,
+    firstname: str,
+    club: str,
+    dateofbirth: str,
+    gender: str,
+    nation: str,
+    paid: str,
+    note: str):
+
+    data_dict= {
+    "participantID": int(participantID),
+    "lastname": lastname,
+    "firstname": firstname,
+    "club": club,
+    "dateofbirth": dateofbirth,
+    "gender": gender,
+    "nation": nation,
+    "paid": int(paid),
+    "note": note 
+    }
+    day,month,year=data_dict["dateofbirth"].split(".")
+    birthdate = date(int(year),int(month),int(day))
+    today = date.today()
+    age = today.year - birthdate.year - ((today.month, today.day) < (birthdate.month, birthdate.day))
+
+    if age >= 18:
+        data_dict["adult"]=1
+    else:
+        data_dict["adult"]=0
+    try:
+        with mysql.connect(**db_dict) as db:
+            cursor = db.cursor()
+            cursor.execute("""
+            insert int fencers values 
+            (   lastname,
+                firstname,
+                club,
+                dateofbirth,
+                gender,
+                nation,
+                paid,
+                adult,
+                note)
+                (%(lastname)s,
+                %(firstname)s,
+                %(club)s,
+                %(dateofbirth)s,
+                %(gender)s,
+                %(nation)s,
+                %(paid)s,
+                %(adult)s,
+                %(note)s)
+            """,data_dict)
+            db.commit()
+        return {"ok" : True}
+    except Exception as e:
+        return {"err" : e}

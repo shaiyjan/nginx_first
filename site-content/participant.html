@@ -4,7 +4,7 @@
 <article>
 <script>
     const pathParts= window.location.pathname.split('/')
-    window.fencerID = pathParts[2]
+    window.participantID = pathParts[2]
 </script>
 
 <h4>Participant Data:</h4>
@@ -55,9 +55,33 @@
 </table>
 <h4>Signups:</h4>
 <table id="signups"></table>
-<button id="submit" onclick=""> Update data </button>
+<button id="submit" onclick="submitParticipantData()"> Update data </button>
+
+
 <script>
-async function fetchFencerData(id){
+
+async function submitParticipantData(){
+    let paidInt = document.getElementById("paid").checked ? 1 : 0;
+    const params = new URLSearchParams({
+        "participantID" : document.getElementById("id").value,
+        "lastname" : document.getElementById("lastname").value,
+        "firstname" : document.getElementById("firstname").value,
+        "club" : document.getElementById("club").value,
+        "dateofbirth" : document.getElementById("dateofbirth").value,
+        "gender" : document.getElementById("gender").value,
+        "nation" : document.getElementById("nation").value,
+        "paid" : paidInt,
+        "note" : document.getElementById("note").value
+    })
+    fetch(window.domain + "/participants/update?" + params.toString(),{
+    method: "POST"
+    })
+    .then(res => res.json())
+    .then(data => console.log(data))
+    .catch(err => console.error("Error", err));
+}
+
+async function fetchParticipantData(id){
     const response = await fetch(window.domain + "/participants/participant/" + id);
     const data = await response.json();
     document.getElementById("id").value=data["fencerID"];
@@ -89,8 +113,7 @@ async function fetchFencerData(id){
         tdcheck.appendChild(check);
         if (tournament[2]==1){check.checked = true;}
         check.addEventListener("change", function() {
-            let checkedInt = 0;
-            if (check.checked == true){ checkedInt=1;}
+            let checkedInt = check.checked ? 1 : 0;
             const params= new URLSearchParams({
                 "participantId" : data["fencerID"],
                 "signuplistID" : tournament[0],
@@ -108,10 +131,7 @@ async function fetchFencerData(id){
         table.appendChild(row);
     }
 }
-
-    
-
-fetchFencerData(window.fencerID)
+fetchParticipantData(window.participantID)
 </script>
 </table>
 <!--# include virtual="template/footer.html" -->
