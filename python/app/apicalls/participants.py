@@ -148,7 +148,6 @@ def fetch_participant(fencerID: str):
                 and table_name = 'fencers'
             order by ordinal_position;
             """)
-        header=cursor.fetchone()
         header=[el[0] for el in cursor.fetchall()]
         fencer_dict = dict(zip(header,fencer_data))
         fencer_dict["participation"]= participation

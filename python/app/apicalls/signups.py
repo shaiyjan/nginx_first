@@ -123,3 +123,29 @@ def read_total_participants_per_signup(item_strlist : str) -> dict:
             )
         ret_dict = dict(enumerate(cursor.fetchall()))
         return ret_dict
+    
+@router.post("/signParticipantUp")
+def signParticipantUp(participantId: int, signuplistID: int, boolInt: int):
+    with mysql.connect(**db_dict) as db:
+        cursor = db.cursor()
+        if boolInt == 1:
+            cursor.execute(
+                """
+                    INSERT INTO signups 
+                    (fencerID,signuplistID)
+                    VALUES
+                    (%s,%s)
+                    ON DUPLICATE KEY UPDATE fencerID = fencerID;
+                """,
+                (int(participantId),int(signuplistID))
+            )
+        elif boolInt == 0:
+            cursor.execute(
+            """
+            delete from signups where
+            fencerID = %s and signuplistID = %s;               
+            """,
+            (int(participantId),int(signuplistID)
+            ))
+        db.commit()
+    return {"ok" : True}

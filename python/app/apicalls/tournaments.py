@@ -189,3 +189,4 @@ def create_rr_tournament(data):
                 except:
                     print(match_dict)
         db.commit() 
+

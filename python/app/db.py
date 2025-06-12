@@ -38,6 +38,7 @@ with mysql.connect(**db_dict) as db:
         """, (int(fencerID),)
     )
     fencer_data = cursor.fetchone()
+    print(fencer_data)
     cursor.execute("""
         select column_name 
         from information_schema.columns 
@@ -45,9 +46,11 @@ with mysql.connect(**db_dict) as db:
             and table_name = 'fencers'
         order by ordinal_position;
         """)
-    header=cursor.fetchone()
     header=[el[0] for el in cursor.fetchall()]
     fencer_dict = dict(zip(header,fencer_data))
+
+    print(header)
+    print(fencer_dict)
     fencer_dict["participation"]= participation
 
 print(fencer_dict)

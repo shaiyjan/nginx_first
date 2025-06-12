@@ -2,9 +2,117 @@
 <html>
 <!--# include virtual="template/header.html" -->
 <article>
+<script>
+    const pathParts= window.location.pathname.split('/')
+    window.fencerID = pathParts[2]
+</script>
 
+<h4>Participant Data:</h4>
+<table id="participantdata">
+    <tr>
+        <td>ID:</td>
+        <td><input id="id" disabled></td>
+    </tr>
+    <tr>
+        <td>Lastname</td>
+        <td><input id="lastname"></td>
+    </tr>
+    <tr>
+        <td>Firstname:</td>
+        <td><input id="firstname"></td>
+    </tr>
+    <tr>
+        <td>Club:</td>
+        <td><input id="club"></td>
+    </tr>
+    <tr>
+        <td>Date of Birth:</td>
+        <td><input id="dateofbirth"></td>
+    </tr>
+    <tr>
+        <td>Gender</td>
+        <td><select id = "gender">
+            <option value="M">Male</option>
+            <option value="F">Female</option>
+        </select></td>
+    </tr>
+    <tr>
+        <td>Nation:</td>
+        <td><input id="nation"></td>
+    </tr>
+    <tr>
+        <td>Paid:</td>
+        <td><input id="paid" type="checkbox"></td>
+    </tr>
+    <tr>
+        <td>Adult:</td>
+        <td><input id="adult" type="checkbox" disabled></td>
+    </tr>
+    <tr>
+        <td>Note:</td>
+        <td><input id="note"></td>
+    </tr>
+</table>
+<h4>Signups:</h4>
+<table id="signups"></table>
+<button id="submit" onclick=""> Update data </button>
+<script>
+async function fetchFencerData(id){
+    const response = await fetch(window.domain + "/participants/participant/" + id);
+    const data = await response.json();
+    document.getElementById("id").value=data["fencerID"];
+    document.getElementById("lastname").value=data["lastname"] ;
+    document.getElementById("firstname").value =data["firstname"] ;
+    document.getElementById("club").value = data["club"];
+    document.getElementById("dateofbirth").value = data["dateofbirth"];
+    document.getElementById("gender").value = data["gender"];
+    document.getElementById("nation").value = data["nation"];
+    if (data["paid"] == 1) {
+      document.getElementById("paid").checked = true;  
+    }
+    if (data["adult"] == 1) {
+      document.getElementById("adult").checked = true;  
+    }
+    document.getElementById("note").value = data["note"]
 
+    const table = document.getElementById("signups");
+    for (let tournament of Object.values(data["participation"])){
+        let row = document.createElement("tr");
+        let tdname = document.createElement("td")
+        tdname.textContent = tournament[1]
+        let tdcheck = document.createElement("td");
+        let check = document.createElement("input");
+        check.type="checkbox";
 
+        row.appendChild(tdname);
+        row.appendChild(tdcheck);
+        tdcheck.appendChild(check);
+        if (tournament[2]==1){check.checked = true;}
+        check.addEventListener("change", function() {
+            let checkedInt = 0;
+            if (check.checked == true){ checkedInt=1;}
+            const params= new URLSearchParams({
+                "participantId" : data["fencerID"],
+                "signuplistID" : tournament[0],
+                "boolInt" : checkedInt 
+            })
 
+        fetch(window.domain + "/signups/signParticipantUp?" + params.toString(),{
+            method: "POST"
+        })
+        .then(res => res.json())
+        .then(data => console.log(data))
+        .catch(err => console.error("Error", err));
+
+        }) 
+        table.appendChild(row);
+    }
+}
+
+    
+
+fetchFencerData(window.fencerID)
+</script>
+</table>
 <!--# include virtual="template/footer.html" -->
 </html>
