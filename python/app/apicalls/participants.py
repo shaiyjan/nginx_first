@@ -207,9 +207,8 @@ def updateParticipant(
     return {"ok" : True}
 
 
-@router.post("/insert")
-def updateParticipant(
-    participantID: str,
+@router.post("/newParticipant")
+def submitNewParticipant(
     lastname: str,
     firstname: str,
     club: str,
@@ -220,7 +219,6 @@ def updateParticipant(
     note: str):
 
     data_dict= {
-    "participantID": int(participantID),
     "lastname": lastname,
     "firstname": firstname,
     "club": club,
@@ -243,8 +241,8 @@ def updateParticipant(
         with mysql.connect(**db_dict) as db:
             cursor = db.cursor()
             cursor.execute("""
-            insert int fencers values 
-            (   lastname,
+            INSERT INTO fencers (
+                lastname,
                 firstname,
                 club,
                 dateofbirth,
@@ -252,7 +250,7 @@ def updateParticipant(
                 nation,
                 paid,
                 adult,
-                note)
+                note) VALUES
                 (%(lastname)s,
                 %(firstname)s,
                 %(club)s,
@@ -264,6 +262,9 @@ def updateParticipant(
                 %(note)s)
             """,data_dict)
             db.commit()
-        return {"ok" : True}
+            newID = cursor.lastrowid()
+
+        return {"ok" : True, "participantID" : newID }
     except Exception as e:
+        print(e)
         return {"err" : e}

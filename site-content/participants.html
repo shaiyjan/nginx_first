@@ -19,7 +19,7 @@
         <th>Assign to Tournament</th>
     </tr>
 </table>
-
+<button onclick="newParticipant()"> Add new Participant</button>
 <script>
     async function updateFencer(id,column,value){
         const params = new URLSearchParams({
@@ -163,14 +163,18 @@
                     "width=600,height=400,top=200,left=300" // Features
                     );
             })
-
-
-
         }
-
         }
     }
     fetchFencers()
+
+    async function newParticipant() {
+        window.open(
+        "/newparticipant.html",              // URL
+        "popupWindow",                      // Window name
+        "width=600,height=400,top=200,left=300" // Features
+        );
+    }
 </script>
 
 
