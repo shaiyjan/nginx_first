@@ -56,7 +56,7 @@
 <h4>Signups:</h4>
 <table id="signups"></table>
 <button id="submit" onclick="submitParticipantData()"> Update data </button>
-
+<button id="delete" onclick="deleteParticipant()"> Delete participant</button>
 
 <script>
 
@@ -131,6 +131,26 @@ async function fetchParticipantData(id){
         table.appendChild(row);
     }
 }
+
+
+async function deleteParticipant(){
+    let paidInt = document.getElementById("paid").checked ? 1 : 0;
+    const params = new URLSearchParams({
+        "participantID" : document.getElementById("id").value,
+    })
+    fetch(window.domain + "/participants/delete?" + params.toString(),{
+    method: "POST"
+    })
+    .then(res => res.json())
+    .then(data => {
+        console.log(data)
+        window.close()
+        })
+    .catch(err => console.error("Error", err));
+    
+}
+
+
 fetchParticipantData(window.participantID)
 </script>
 </table>

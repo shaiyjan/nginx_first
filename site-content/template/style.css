@@ -43,7 +43,6 @@ section{
 nav {
   float: left;
   background-color: #ccc;
-  width: 25%;
   width: 300px;
   padding: 20px;
   height: 100%;
@@ -57,7 +56,7 @@ article {
   background-color: white;
   flex: 1;
   padding: 20px;
-  height: 100%;
+  height: calc(100% - 60px);
   width:  calc(100% - 340px);
   overflow-x: auto;
 }
@@ -67,7 +66,7 @@ main {
   flex: 1;
   display: flex;
   overflow: hidden;
-  min-height: 0;
+  height: 100%;
 }
 
 article table {

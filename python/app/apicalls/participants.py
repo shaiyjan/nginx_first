@@ -261,10 +261,24 @@ def submitNewParticipant(
                 %(adult)s,
                 %(note)s)
             """,data_dict)
+            newID = cursor.lastrowid
             db.commit()
-            newID = cursor.lastrowid()
+            
 
         return {"ok" : True, "participantID" : newID }
     except Exception as e:
         print(e)
         return {"err" : e}
+    
+@router.post("/delete")
+def delete_participant(participantID):
+    with mysql.connect(**db_dict) as db:
+        try:
+            cursor = db.cursor()
+            cursor.execute("""
+                delete from fencers where fencerID = %s                       
+            """, (participantID,))
+            db.commit()
+            return {"ok": True}
+        except Exception as e:
+            return {"err" : e}

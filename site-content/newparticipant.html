@@ -93,13 +93,15 @@
             "paid" : paidInt,
             "note" : document.getElementById("note").value
         })
-        fetch(window.domain + "/participants/newParticipant?" + params.toString(),{
+        fetch(window.domain + "/participants/newParticipant?" + params.toString(), {
         method: "POST"
         })
         .then(res => res.json())
-        .then(data => console.log(data["ok"])
-            
-        )
+        .then(data => {
+            if ("participantID" in data) {
+                window.location.href = "/participant/" + data["participantID"];
+            }
+        })
         .catch(err => console.error("Error", err));
 
     }
