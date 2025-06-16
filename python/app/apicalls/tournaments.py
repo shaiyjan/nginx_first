@@ -46,7 +46,7 @@ def submit_tournament(
     if tmode != "rr":
         grp = grp.split("#")[1:]
         grp = [inner.strip(",").split(",") for inner in grp]
-        grp = [int(el) for el in grp]
+        grp = [[int(e) for e in el] for el in grp]
 
     data = {
         "name" : tournament,
@@ -56,6 +56,8 @@ def submit_tournament(
         "groups" : grp
     }
 
+    print(tmode)
+    print(tmode=="ko")
     if tmode == "ko":
         response = create_ko_tournament(data)
     elif tmode == "rr":
@@ -64,129 +66,157 @@ def submit_tournament(
     if response == 1:
         return {"ok": True}
     else:
-        return {"ok": False}
+        return {"err": response}
 
-def create_ko_tournament(data):
-    with mysql.connect(**db_dict) as db:
-        cursor = db.cursor()
-        cursor.execute("""
-           INSERT INTO tournaments (
-                       name,
-                       group_size,
-                       group_count,
-                       tournament_mode,
-                       preliminaries
-                       ) VALUES 
-                    (%(name)s,%(gsize)s,%(gcount)s,ko,%(precount)s);"""
-                    ,data)
-        db.commit()
-        tournament_id = cursor.lastrowid
-        for count,group in enumerate(data["groups"]):
-            while len(group)>0:
-                fencer=group.pop()
-                cursor.execute("""
-                                INSERT INTO tournament_groups (
-                                tournamentID,
-                                group_no,
-                                preliminaries,
-                                fencerID
-                                ) VALUES
-                                (%s,%s,%s,%s) """,
-                                (int(tournament_id),
-                                 int(count),
-                                 data["precount"],
-                                 int(fencer))
-                                )
-            
-                for fencerB in group:
-                    if fencer == fencerB: continue
-                    match_dict={
-                    "tournamentID" : tournament_id,
-                    "type" : "roundrobin",
-                    "idA" : fencer,
-                    "idB" : fencerB
-                    }
+def create_ko_tournament(data : dict):
+    try:
+        with mysql.connect(**db_dict) as db:
+            grps = data.pop("groups")
+            cursor = db.cursor()
+            cursor.execute("""
+            INSERT INTO tournaments (
+                        name,
+                        group_size,
+                        group_count,
+                        tournament_mode,
+                        preliminaries
+                        ) VALUES 
+                        (%(name)s,%(gsize)s,%(gcount)s,'ko',%(precount)s);"""
+                        ,data)
+            db.commit()
+            tournament_id = cursor.lastrowid
+            for count,group in enumerate(grps):
+                while len(group)>0:
+                    fencer=group.pop()
                     cursor.execute("""
-                    INSERT INTO matches (
-                    tournamentID,
-                    type,
-                    idA,
-                    idB) VALUES
-                    (%(tournamentID)s,
-                    %(type)s,
-                    %(idA)s,
-                    %(idB)s)                    
-                    """,
-                    match_dict
-                    )
-        db.commit()
+                                    INSERT INTO tournament_groups (
+                                    tournamentID,
+                                    group_no,
+                                    preliminaries,
+                                    fencerID
+                                    ) VALUES
+                                    (%s,%s,%s,%s) """,
+                                    (int(tournament_id),
+                                    int(count),
+                                    data["precount"],
+                                    int(fencer))
+                                                )
+                
+                    for fencerB in group:
+                        if fencer == fencerB: continue
+                        match_dict={
+                        "tournamentID" : tournament_id,
+                        "type" : "preliminaries",
+                        "idA" : fencer,
+                        "idB" : fencerB
+                        }
+                        cursor.execute("""
+                        INSERT INTO matches (
+                        tournamentID,
+                        type,
+                        fencerAID,
+                        fencerBID) VALUES
+                        (%(tournamentID)s,
+                        %(type)s,
+                        %(idA)s,
+                        %(idB)s)                    
+                        """,
+                        match_dict
+                        )
+            db.commit()
+            return 1
+    except Exception as e:
+        print(e)
+        return e
 
 
 def create_rr_tournament(data):
-   with mysql.connect(**db_dict) as db:
+    try:
+        with mysql.connect(**db_dict) as db:
+                cursor = db.cursor()
+                cursor.execute("""
+                INSERT INTO tournaments (
+                            name,
+                            group_size,
+                            group_count,
+                            tournament_mode,
+                            preliminaries
+                            ) VALUES 
+                            (%(name)s,0,1,'rr',0);"""
+                            ,data)
+                db.commit()
+                tournament_id = cursor.lastrowid
+                item_list= data["groups"].split("_")[0:-1]
+                cursor.execute(
+                    """
+                    select
+                        distinct(fencerID)
+                    from signups where
+                    signuplistID in (""" + ",".join(item_list) + ");"
+                        )
+                groups=[el[0] for el in cursor.fetchall()]
+
+                
+                while len(groups)> 0:
+                    fencer=groups.pop()
+                    cursor.execute("""
+                                    INSERT INTO tournament_groups (
+                                    tournamentID,
+                                    group_no,
+                                    preliminaries,
+                                    fencerID
+                                    ) VALUES
+                                    (%s,%s,%s,%s) """,
+                                    (int(tournament_id),
+                                    1,
+                                    0,
+                                    int(fencer))
+                                    )
+                    
+                    for fencerB in groups:
+                        try:
+                            if fencer == fencerB: continue
+                            match_dict={
+                            "tournamentID" : tournament_id,
+                            "type" : "roundrobin",
+                            "idA" : fencer,
+                            "idB" : fencerB
+                            }
+                            cursor.execute("""
+                            INSERT INTO matches (
+                            tournamentID,
+                            type,
+                            fencerAID,
+                            fencerBID) VALUES
+                            (%(tournamentID)s,
+                            %(type)s,
+                            %(idA)s,
+                            %(idB)s)                    
+                            """,
+                            match_dict
+                            )  
+                        except:
+                            print(match_dict)
+                db.commit() 
+                return 1
+    except Exception as e:
+        return e
+
+def fetch_ko_tournament(tournamentID):
+    with mysql.connect(**db_dict) as db:
         cursor = db.cursor()
         cursor.execute("""
-           INSERT INTO tournaments (
-                       name,
-                       group_size,
-                       group_count,
-                       tournament_mode,
-                       preliminaries
-                       ) VALUES 
-                    (%(name)s,0,1,'rr',0);"""
-                    ,data)
-        db.commit()
-        tournament_id = cursor.lastrowid
-        item_list= data["groups"].split("_")[0:-1]
-        cursor.execute(
-            """
-            select
-                distinct(fencerID)
-            from signups where
-            signuplistID in (""" + ",".join(item_list) + ");"
-                )
-        groups=[el[0] for el in cursor.fetchall()]
-
-        
-        while len(groups)> 0:
-            fencer=groups.pop()
-            cursor.execute("""
-                            INSERT INTO tournament_groups (
-                            tournamentID,
-                            group_no,
-                            preliminaries,
-                            fencerID
-                            ) VALUES
-                            (%s,%s,%s,%s) """,
-                            (int(tournament_id),
-                            1,
-                            0,
-                            int(fencer))
-                            )
-            
-            for fencerB in groups:
-                try:
-                    if fencer == fencerB: continue
-                    match_dict={
-                    "tournamentID" : tournament_id,
-                    "type" : "preliminaries",
-                    "idA" : fencer,
-                    "idB" : fencerB
-                    }
-                    cursor.execute("""
-                    INSERT INTO matches (
-                    tournamentID,
-                    type,
-                    fencerAID,
-                    fencerBID) VALUES
-                    (%(tournamentID)s,
-                    %(type)s,
-                    %(idA)s,
-                    %(idB)s)                    
-                    """,
-                    match_dict
-                    )  
-                except:
-                    print(match_dict)
-        db.commit() 
-
+        select distinct type from matches
+        tournamentID = %s;""",
+        (tournamentID,)
+        )
+        types = [el[0] for el in cursor.fetchall()]
+        return {"types" : types}
+    
+def fetch_ko_type(tournamentID,matchtype):
+    with mysql.connect(**db_dict) as db:
+        cursor = db.cursor()
+        cursor.execute("""
+        select * from matches where tournamentID = %s and type = %s           
+        """, (int(tournamentID),matchtype))
+        matches = []

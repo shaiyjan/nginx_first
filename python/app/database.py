@@ -41,6 +41,7 @@ def setup_db():
                 group_no INT NOT NULL,
                 preliminaries INT NOT NULL,
                 FencerID INT NOT NULL,
+                dropout bool default 0,
                 PRIMARY KEY (GroupId),
                 FOREIGN KEY (TournamentId) REFERENCES tournaments(tournamentId) ON DELETE CASCADE
             );

@@ -15,7 +15,7 @@ async function fetchTournaments(url) {
         for (const [key,value] of Object.entries(data)) {
             const li = document.createElement("li");
             const ref = document.createElement("a");
-            ref.href = "tour/" + key;
+            ref.href = "tournament/" + key;
             ref.textContent = value;
             li.appendChild(ref) ;
             list.appendChild(li);
