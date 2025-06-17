@@ -22,7 +22,7 @@ def setup_db():
         cursor.execute(
             """
             create table if not exists tournaments(
-                tournamentId int NOT NULL AUTO_INCREMENT,
+                tournamentID int NOT NULL AUTO_INCREMENT,
                 name varchar(200) NOT NULL,
                 group_size int NOT NULL,
                 group_count int NOT NULL,
@@ -36,14 +36,14 @@ def setup_db():
         cursor.execute(
             """
             CREATE TABLE IF NOT EXISTS tournament_groups (
-                GroupId INT NOT NULL AUTO_INCREMENT,
-                tournamentId INT NOT NULL,
+                groupID INT NOT NULL AUTO_INCREMENT,
+                tournamentID INT NOT NULL,
                 group_no INT NOT NULL,
                 preliminaries INT NOT NULL,
-                FencerID INT NOT NULL,
+                fencerID INT NOT NULL,
                 dropout bool default 0,
-                PRIMARY KEY (GroupId),
-                FOREIGN KEY (TournamentId) REFERENCES tournaments(tournamentId) ON DELETE CASCADE
+                PRIMARY KEY (groupID),
+                FOREIGN KEY (tournamentID) REFERENCES tournaments(tournamentID) ON DELETE CASCADE
             );
             """
         )
@@ -69,19 +69,19 @@ def setup_db():
         cursor.execute(
             """
             create table if not exists signuplists(
-            signuplistId int NOT NULL AUTO_INCREMENT,
+            signupListID int NOT NULL AUTO_INCREMENT,
             name varchar(200),
-            in_tournament bool default FALSE,
-            PRIMARY KEY (signuplistId)
+            participationStatus bool default FALSE,
+            PRIMARY KEY (signuplistID)
             )
             """
         )
         cursor.execute(
             """
             create table if not exists signups(
-                SignupID int NOT NULL AUTO_INCREMENT,
-                FencerID int NOT NULL,
-                SignuplistID int NOT NULL,
+                signupID int NOT NULL AUTO_INCREMENT,
+                fencerID int NOT NULL,
+                signupListID int NOT NULL,
                 attendance bool NOT NULL DEFAULT 0,
                 PRIMARY KEY(SignupID),
                 FOREIGN KEY (FencerID) REFERENCES fencers(FencerID) ON DELETE CASCADE,
@@ -103,6 +103,17 @@ def setup_db():
                 PRIMARY KEY(matchID),
                 FOREIGN KEY (tournamentID) REFERENCES tournaments(tournamentID) ON DELETE CASCADE
             );"""
+        )
+        cursor.execute(
+            """
+            create table if not exists tournament_status(
+            tournamentStatusID int not NULL AUTO_INCREMENT,
+            tournamentID int not NULL,
+            status varchar(100) NOT NULL,
+            PRIMARY KEY(TournamentStatusID),
+            FOREIGN KEY (tournamentID) REFERENCES tournaments(tournamentID) ON DELETE CASCADE
+            );
+            """
         )
 
     except Exception as e  :

@@ -81,10 +81,17 @@ def create_ko_tournament(data : dict):
                         tournament_mode,
                         preliminaries
                         ) VALUES 
-                        (%(name)s,%(gsize)s,%(gcount)s,'ko',%(precount)s);"""
+                        (%(name)s,%(gsize)s,%(gcount)s,'ko',1);"""
                         ,data)
             db.commit()
             tournament_id = cursor.lastrowid
+            cursor.execute("""
+            INSERT INTO tournament_status (
+            tournamentID,
+            status  
+            ) VALUES (%s,%s)""",
+            (tournament_id,"preliminary 1"))
+            db.commit()
             for count,group in enumerate(grps):
                 while len(group)>0:
                     fencer=group.pop()
@@ -106,7 +113,7 @@ def create_ko_tournament(data : dict):
                         if fencer == fencerB: continue
                         match_dict={
                         "tournamentID" : tournament_id,
-                        "type" : "preliminaries",
+                        "type" : "preliminary 1",
                         "idA" : fencer,
                         "idB" : fencerB
                         }
@@ -201,6 +208,16 @@ def create_rr_tournament(data):
                 return 1
     except Exception as e:
         return e
+    
+@router.get("/fetchTournament/{tournamentID}")
+def fetch_tournament(tournamentID):
+    with mysql.connect(**db_dict) as db:
+        cursor = db.cursor()
+        cursor.execute("""
+        select * from tournaments where tournamentID = %s
+        """,(tournamentID,))
+        tournament_data = cursor.fetchall()
+
 
 def fetch_ko_tournament(tournamentID):
     with mysql.connect(**db_dict) as db:
