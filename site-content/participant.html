@@ -7,6 +7,7 @@
     window.participantID = pathParts[2]
 </script>
 
+<script type="text/javascript" src="javascript/participant.js"></script>
 <h4>Participant Data:</h4>
 <table id="participantdata">
     <tr>
@@ -59,98 +60,6 @@
 <button id="delete" onclick="deleteParticipant()"> Delete participant</button>
 
 <script>
-
-async function submitParticipantData(){
-    let paidInt = document.getElementById("paid").checked ? 1 : 0;
-    const params = new URLSearchParams({
-        "participantID" : document.getElementById("id").value,
-        "lastname" : document.getElementById("lastname").value,
-        "firstname" : document.getElementById("firstname").value,
-        "club" : document.getElementById("club").value,
-        "dateofbirth" : document.getElementById("dateofbirth").value,
-        "gender" : document.getElementById("gender").value,
-        "nation" : document.getElementById("nation").value,
-        "paid" : paidInt,
-        "note" : document.getElementById("note").value
-    })
-    fetch(window.domain + "/participants/update?" + params.toString(),{
-    method: "POST"
-    })
-    .then(res => res.json())
-    .then(data => console.log(data))
-    .catch(err => console.error("Error", err));
-}
-
-async function fetchParticipantData(id){
-    const response = await fetch(window.domain + "/participants/participant/" + id);
-    const data = await response.json();
-    document.getElementById("id").value=data["fencerID"];
-    document.getElementById("lastname").value=data["lastname"] ;
-    document.getElementById("firstname").value =data["firstname"] ;
-    document.getElementById("club").value = data["club"];
-    document.getElementById("dateofbirth").value = data["dateofbirth"];
-    document.getElementById("gender").value = data["gender"];
-    document.getElementById("nation").value = data["nation"];
-    if (data["paid"] == 1) {
-      document.getElementById("paid").checked = true;  
-    }
-    if (data["adult"] == 1) {
-      document.getElementById("adult").checked = true;  
-    }
-    document.getElementById("note").value = data["note"]
-
-    const table = document.getElementById("signups");
-    for (let tournament of Object.values(data["participation"])){
-        let row = document.createElement("tr");
-        let tdname = document.createElement("td")
-        tdname.textContent = tournament[1]
-        let tdcheck = document.createElement("td");
-        let check = document.createElement("input");
-        check.type="checkbox";
-
-        row.appendChild(tdname);
-        row.appendChild(tdcheck);
-        tdcheck.appendChild(check);
-        if (tournament[2]==1){check.checked = true;}
-        check.addEventListener("change", function() {
-            let checkedInt = check.checked ? 1 : 0;
-            const params= new URLSearchParams({
-                "participantId" : data["fencerID"],
-                "signuplistID" : tournament[0],
-                "boolInt" : checkedInt 
-            })
-
-        fetch(window.domain + "/signups/signParticipantUp?" + params.toString(),{
-            method: "POST"
-        })
-        .then(res => res.json())
-        .then(data => console.log(data))
-        .catch(err => console.error("Error", err));
-
-        }) 
-        table.appendChild(row);
-    }
-}
-
-
-async function deleteParticipant(){
-    let paidInt = document.getElementById("paid").checked ? 1 : 0;
-    const params = new URLSearchParams({
-        "participantID" : document.getElementById("id").value,
-    })
-    fetch(window.domain + "/participants/delete?" + params.toString(),{
-    method: "POST"
-    })
-    .then(res => res.json())
-    .then(data => {
-        console.log(data)
-        window.close()
-        })
-    .catch(err => console.error("Error", err));
-    
-}
-
-
 fetchParticipantData(window.participantID)
 </script>
 </table>

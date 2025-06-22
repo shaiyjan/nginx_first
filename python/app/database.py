@@ -100,8 +100,10 @@ def setup_db():
                 pointsB int,
                 winner int,
                 note varchar(200),
+                tournamentStatusID int NOT NULL,
                 PRIMARY KEY(matchID),
                 FOREIGN KEY (tournamentID) REFERENCES tournaments(tournamentID) ON DELETE CASCADE
+                FOREIGN KEY (tournamentStatusID) REFERENCES tournament_status(tournamentStatusID) on DELETE CASCADE
             );"""
         )
         cursor.execute(

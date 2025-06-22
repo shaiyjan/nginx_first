@@ -48,3 +48,31 @@ with mysql.connect(**db_dict) as db:
         match_dict =dict(zip(header,match))
         matches.append(match_dict)
     
+
+def fetch_Tournaments():
+    with mysql.connect(**db_dict) as db:
+        cursor = db.cursor()
+        cursor.execute("""
+            select 
+                tournamentId,
+                name,
+                tournament_mode
+            from tournaments;        
+            """)
+        tournaments=cursor.fetchall()
+        if tournaments.__len__==0:
+            return {"1":"Empty"}
+        else:
+            return_list = []
+            print(tournaments)
+            for tournament in tournaments:
+                tournament_dict=dict()
+                tournament_dict["id"]=tournament[0]
+                tournament_dict["name"]=tournament[1]
+                tournament_dict["mode"]=tournament[2]
+                return_list.append(tournament_dict)
+            return return_list
+
+print(fetch_Tournaments())
+
+

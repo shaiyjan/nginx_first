@@ -4,67 +4,17 @@
     <a href = "/current_matches.html" > Current Ongoing matches</a>
     <p>Tournaments:</p>
     <ul id="tournamentLinks">
+        <link rel="stylesheet" href="/template/style.css">
+        <script type="text/javascript" src="javascript/index.js"></script>
         <script>
-            async function fetchTournaments(url) {
-                const response = await fetch(url);
-                const list = document.getElementById("tournamentLinks");
-                if (!response.ok) {
-                    console.log("failed to fetch tournaments");
-                    const li = document.createElement("li");
-                    li.textContent= "Not able to fetch tournaments."
-                    list.appendChild(li);
-                }
-                const data = await response.json();
-                if (Object.entries(data).length == 0 ){
-                    const li = document.createElement("li");
-                    li.textContent= "No tournaments to fetch."
-                    list.appendChild(li);
-                }
-                
-                for (const [key,value] of Object.entries(data)) {
-                    const li = document.createElement("li");
-                    const ref = document.createElement("a");
-                    ref.href = "/tournament/" + key;
-                    ref.textContent = value;
-                    li.appendChild(ref) ;
-                    list.appendChild(li);
-                }
-                const create = document.createElement("a");
-                create.href= "/newtournament.html";
-                create.textContent= "Create new tournament";
-                list.appendChild(document.createElement("li"))
-                list.lastChild.appendChild(create);
-                
-
-            }
-
             fetchTournaments(window.domain + '/tournaments/fetchTournaments');
-
         </script>
     </ul>
     <p>Signups: </p>
     <ul id="signupLinks">
         <li><a href="/participants.html">All participants</a></li>
         <script>
-            async function fetchSignups(url) {
-                const response = await fetch(url);
-                if (!response.ok) {
-                    console.log("failed to fetch signups");
-                }
-                const data = await response.json();
-                const list = document.getElementById("signupLinks");
-                for (const [key,value] of Object.entries(data)) {
-                    const li = document.createElement("li");
-                    const ref = document.createElement("a");
-                    ref.href = "/signups/" + key;
-                    ref.textContent = value;
-                    li.appendChild(ref) ;
-                    list.appendChild(li);
-                }
-            }
-
             fetchSignups(window.domain + '/signups/signuplists');
-
         </script>
     </ul>
 </nav>

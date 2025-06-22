@@ -22,17 +22,22 @@ def fetch_Tournaments():
         cursor.execute("""
             select 
                 tournamentId,
-                name           
+                name,
+                tournament_mode
             from tournaments;        
             """)
         tournaments=cursor.fetchall()
         if tournaments.__len__==0:
             return {"1":"Empty"}
         else:
-            ret_dict = dict()
+            return_list = []
             for tournament in tournaments:
-                ret_dict[tournament[0]]=tournament[1]
-            return ret_dict
+                tournament_dict=dict()
+                tournament_dict["id"]=tournament[0]
+                tournament_dict["name"]=tournament[1]
+                tournament_dict["mode"]=tournament[2]
+                return_list.append(tournament_dict)
+            return return_list
 
 @router.post("/submitTournament")
 def submit_tournament(
@@ -73,6 +78,8 @@ def create_ko_tournament(data : dict):
         with mysql.connect(**db_dict) as db:
             grps = data.pop("groups")
             cursor = db.cursor()
+            # Writes tournament into database and fetches id 
+            # of respective tournament
             cursor.execute("""
             INSERT INTO tournaments (
                         name,
@@ -85,6 +92,9 @@ def create_ko_tournament(data : dict):
                         ,data)
             db.commit()
             tournament_id = cursor.lastrowid
+            # Create tournament status as preliminary 1, this will later
+            # need to be updated to depend on the selected preliminary 
+            # counter.
             cursor.execute("""
             INSERT INTO tournament_status (
             tournamentID,
@@ -92,23 +102,29 @@ def create_ko_tournament(data : dict):
             ) VALUES (%s,%s)""",
             (tournament_id,"preliminary 1"))
             db.commit()
+            tournament_status_id = cursor.lastrowid
             for count,group in enumerate(grps):
                 while len(group)>0:
                     fencer=group.pop()
+                    # For each participant, create an entry with the 
+                    # respectuve group in the tournament_groups table.
                     cursor.execute("""
                                     INSERT INTO tournament_groups (
                                     tournamentID,
                                     group_no,
                                     preliminaries,
-                                    fencerID
+                                    fencerID,
+                                   tournamentStatusID
                                     ) VALUES
                                     (%s,%s,%s,%s) """,
                                     (int(tournament_id),
                                     int(count),
                                     data["precount"],
-                                    int(fencer))
-                                                )
-                
+                                    int(fencer),
+                                    tournament_status_id)
+                                    )
+                    # For each pair of participants in the respective group
+                    # add a match to the matches table.
                     for fencerB in group:
                         if fencer == fencerB: continue
                         match_dict={
